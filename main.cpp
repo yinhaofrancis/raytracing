@@ -8,7 +8,7 @@
 #define HEIGHT 300
 
 #define RATIO (double(WIDTH) / HEIGHT)
-#define SAMPLES  1
+#define SAMPLES  30
 
 int main(int, char **)
 {
@@ -32,9 +32,9 @@ int main(int, char **)
 
     go::Scene sc(100);
 
-    go::Sphere* sq = new go::Sphere(Vector3d(-1.5, 0, -2.5),Vector3d(-1.5, 0, -2.5), 0.5,l1);
+    go::Sphere* sq = new go::Sphere(Vector3d(-1.5, 0, -2.5), 0.5,l1);
 
-    go::Sphere* sq4 = new go::Sphere(Vector3d(-1.5, 1, -2.5),Vector3d(0, 0, -5.5), 0.5,l1);
+    go::Sphere* sq4 = new go::Sphere(Vector3d(-1.5, 3.5, -2.5), 0.5,l1);
 
     go::Sphere* sq2 = new go::Sphere(Vector3d(0., 0,0.),Vector3d(0., 0,0.), 0.5,m1);
 
