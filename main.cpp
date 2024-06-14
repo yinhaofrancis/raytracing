@@ -8,7 +8,7 @@
 #define HEIGHT 300
 
 #define RATIO (double(WIDTH) / HEIGHT)
-#define SAMPLES  30
+#define SAMPLES  1000
 
 int main(int, char **)
 {

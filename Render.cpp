@@ -1,9 +1,13 @@
 #include "Render.hpp"
 #include <iostream>
-go::Render::Render(go::Surface& sur,go::Camera& c,go::Scene& s):m_surface(sur),m_camera(c),m_scene(s)
+#include <atomic>
+go::Render::Render(go::Surface &sur, go::Camera &c, go::Scene &s) : m_surface(sur), m_camera(c), m_scene(s)
 {
 }
 
+go::Render::~Render()
+{
+}
 
 go::Scene &go::Render::scene()
 {
@@ -17,26 +21,41 @@ go::Camera &go::Render::camera()
 
 void go::Render::draw(int samples)
 {
-    for (size_t i = 0; i < m_surface.width(); i++)
+    int max = 10;
+    std::atomic_int b = 0;
+    for (size_t t = 0; t < max; t++)
     {
-        std::cout << "col:" << i << std::endl;
-        
-        for (size_t j = 0; j < m_surface.height(); j++)
-        {
-            Vector4d color(0,0,0,0);
-            
-            for (int k = 0; k < samples; k++)
+        int index = t;
+        std::thread m([this, samples,index,max,&b](){
+            for (size_t i = index; i < m_surface.width(); i+=max)
             {
-                
-                auto a = m_surface.pixelToScreenMultiSample(i, j);
-                auto ray = m_camera.createRay(a);
-                Vector4d tcolor = m_scene.hit(ray);
-                color += tcolor;
-            }
-
-            color = color / samples;
-        
-            m_surface.draw(gamma(color,1),i,j);
-        }
+                std::cout << "col:" << i << std::endl;
+                for (size_t j = 0; j < m_surface.height(); j++)
+                {
+                    renderPixel(i,j,samples);
+                }
+            } 
+            b+=1;
+        });
+        m.detach();
     }
+    while (b < max)
+    {
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
+    
+}
+
+void go::Render::renderPixel(int x, int y, int samples)
+{
+    Vector4d color(0, 0, 0, 0);
+    for (int k = 0; k < samples; k++)
+    {
+        auto a = m_surface.pixelToScreenMultiSample(x, y);
+        auto ray = m_camera.createRay(a);
+        Vector4d tcolor = m_scene.hit(ray);
+        color += tcolor;
+    }
+    color = color / samples;
+    m_surface.draw(gamma(color, 1), x, y);
 }

@@ -89,10 +89,7 @@ go::Surface::Surface(int w, int h) : m_width(w), m_height(h)
 
 go::Surface::~Surface()
 {
-    if(buffer != nullptr){
-        delete[] buffer;
-        buffer = nullptr;
-    }
+
 }
 
 void go::Surface::draw(uint32_t color, int x, int y)
