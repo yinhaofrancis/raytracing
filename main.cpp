@@ -4,8 +4,8 @@
 #include "Render.hpp"
 #include <iostream>
 
-#define WIDTH  800
-#define HEIGHT 600
+#define WIDTH  400
+#define HEIGHT 300
 
 #define RATIO (double(WIDTH) / HEIGHT)
 #define SAMPLES  1000

@@ -21,7 +21,8 @@ go::Camera &go::Render::camera()
 
 void go::Render::draw(int samples)
 {
-    int max = 6;
+
+    int max = 100;
     std::atomic_int b = 0;
     for (size_t t = 0; t < max; t++)
     {
@@ -41,9 +42,8 @@ void go::Render::draw(int samples)
     }
     while (b < max)
     {
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
-    
 }
 
 void go::Render::renderPixel(int x, int y, int samples)
