@@ -4,8 +4,8 @@
 #include "Render.hpp"
 #include <iostream>
 
-#define WIDTH  300
-#define HEIGHT 300
+#define WIDTH  800
+#define HEIGHT 600
 
 #define RATIO (double(WIDTH) / HEIGHT)
 #define SAMPLES  1000
@@ -28,17 +28,17 @@ int main(int, char **)
 
     auto d1 = std::make_shared<go::Dielectric>(1.5);
     
-    go::Camera c(Eigen::Vector3d(-1, 1, 2), Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0.3, 0),pi / 2, WIDTH / HEIGHT,2.1,pi / 2);
+    go::Camera c(Eigen::Vector3d(3, 2, 3), Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0.3, 0),pi / 6, RATIO,4.9,pi / 100);
 
     go::Scene sc(100);
 
     go::Sphere* sq = new go::Sphere(Vector3d(-1.5, 0, -2.5), 0.5,l1);
 
-    go::Sphere* sq4 = new go::Sphere(Vector3d(-1.5, 3.5, -2.5), 0.5,l1);
+    go::Sphere* sq4 = new go::Sphere(Vector3d(1.1, 0, 0), 0.5,l1);
 
     go::Sphere* sq2 = new go::Sphere(Vector3d(0., 0,0.),Vector3d(0., 0,0.), 0.5,m1);
 
-     go::Sphere* sq3 = new go::Sphere(Vector3d(-1., 0,0.), 0.5,d1);
+     go::Sphere* sq3 = new go::Sphere(Vector3d(-1.1, 0,0.), 0.5,d1);
 
     go::Planer* pla = new go::Planer(Vector3d(0,-0.5,0),Vector3d(0,1,0),l2);
 

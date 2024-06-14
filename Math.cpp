@@ -149,7 +149,7 @@ go::Camera::Camera(Vector3d location, Vector3d target, Vector3d up, double fov, 
 go::Ray go::Camera::createRay(Vector2d &screenUV)
 {
     double length = m_length * tan(m_fov / 2);
-    Vector3d offset = random_in_unit_disk() * 0.1;
+    Vector3d offset = random_in_unit_disk() * m_disk_radius;
     Vector3d filmCoo(
         screenUV.x() * m_ratio * length ,
         screenUV.y()* length,-m_length);
