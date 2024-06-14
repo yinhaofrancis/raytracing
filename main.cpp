@@ -14,17 +14,13 @@ int main(int, char **)
 {
     go::Screen s(WIDTH, HEIGHT);
 
-    
-
     auto sf = s.createSurface();
 
-    
+    auto l1 = std::make_shared<go::Lambertian>(Vector3d(0.1,0.5,0.7));
 
-    auto l1 = std::make_shared<go::Lambertian>(Vector4d(0.1,0.5,0.7,1));
+    auto l2 = std::make_shared<go::Lambertian>(new go::TestColor());
 
-    auto l2 = std::make_shared<go::Lambertian>(Vector4d(0.5,0.7,0.1,1));
-
-    auto m1 = std::make_shared<go::Metal>(Vector4d(0.7,0.7,0.7,1),0);
+    auto m1 = std::make_shared<go::Metal>(Vector3d(0.7,0.7,0.7),0);
 
     auto d1 = std::make_shared<go::Dielectric>(1.5);
     

@@ -212,17 +212,28 @@ bool go::Sphere::hit(Ray &ray, Interval ray_t, HitResult &result)
         result.normal = n1;
         result.hit = h1;
         result.mat = m_mat;
+        this->uv(result.uv,result.hit);
         result.isFront = n1.dot(ray.direction()) <= 0;
         return true;
     }
     return false;
 }
 
+void go::Sphere::uv(Vector2d &uv, const Vector3d &point)
+{
+    auto theta = acos(-point.y());
+    auto phi = atan2(-point.z(), point.x()) + pi;
+
+    double u = phi / (2*pi);        
+    double v = theta / pi;
+    uv[0] = u;
+    uv[1] = v;
+}
+
 Vector3d go::Sphere::center(Ray & t)
 {
     return mix(m_center,m_center2,t.time());
 }
-
 
 
 go::Interval::Interval(double min, double max) : m_min(min), m_max(max)
@@ -264,6 +275,12 @@ go::Interval go::Interval::expands(double x) const
 
 go::Planer::Planer(Vector3d point, Vector3d normal, std::shared_ptr<Material> mat) : m_point(point), m_normal(normal), m_mat(mat)
 {
+    Vector3d tx = Vector3d(1.0,0,0);
+    Vector3d y = tx.cross(m_normal);
+    Vector3d x = m_normal.cross(y);
+    Matrix3d tra;
+    tra << x,y,m_normal;
+    m_uv_back = tra.inverse();
 }
 
 bool go::Planer::hit(Ray &ray, Interval ray_t, HitResult &result)
@@ -279,12 +296,21 @@ bool go::Planer::hit(Ray &ray, Interval ray_t, HitResult &result)
         result.normal = m_normal;
         result.mat = m_mat;
         result.isFront = true;
+        this->uv(result.uv,result.hit);
         if (ray_t.contains(t))
         {
             return true;
         }
     }
     return false;
+}
+
+void go::Planer::uv(Vector2d &uv, const Vector3d &point)
+{
+   Vector3d uvw = m_uv_back * point;
+
+   uv[0] = abs(std::fmod(uvw[0],1));
+   uv[1] = abs(std::fmod(uvw[1],1));
 }
 
 go::Scene::Scene(double distance) : m_max_distance(distance)
@@ -346,27 +372,34 @@ bool go::Material::scatter(const Ray &in, Vector4d &color, HitResult &hit, Ray &
     return false;
 }
 
-go::Lambertian::Lambertian(Vector4d albedo) : m_albedo(albedo)
+go::Lambertian::Lambertian(Vector3d albedo) : m_texture(std::make_shared<Color>(albedo))
+{
+}
+
+go::Lambertian::Lambertian(Texture *texure):m_texture(texure)
 {
 }
 
 bool go::Lambertian::scatter(const Ray &in, Vector4d &color, HitResult &hit, Ray &out)
 {
     out = in;
+    auto tColor = m_texture->color(hit.uv,hit.hit);
+    color << tColor ,1.0;
     out.lambertian(hit.normal, hit.hit);
-    color = m_albedo;
     return true;
 }
 
-go::Metal::Metal(Vector4d albedo, double fuzz) : m_albedo(albedo), m_fuzz(fuzz)
+go::Metal::Metal(Vector3d albedo, double fuzz) : m_texture(std::make_shared<Color>(albedo)), m_fuzz(fuzz)
 {
 }
 
 bool go::Metal::scatter(const Ray &in, Vector4d &color, HitResult &hit, Ray &out)
 {
     out = in;
+
     out.reflect(hit.normal, hit.hit, m_fuzz);
-    color = m_albedo;
+    auto tColor = m_texture->color(hit.uv,hit.hit);
+    color << tColor ,1.0;
     return true;
 }
 
@@ -404,4 +437,29 @@ bool go::Dielectric::scatter(const Ray &in, Vector4d &color, HitResult &hit, Ray
     color = Vector4d(1, 1, 1, 1);
 
     return true;
+}
+
+go::Color::Color(Vector3d &albedo):m_albedo(albedo)
+{
+
+}
+
+go::Color::~Color(){}
+
+Vector3d go::Color::color(Vector2d uv, Vector3d &point)
+{
+    return m_albedo;
+}
+
+
+
+Vector3d go::TestColor::color(Vector2d uv, Vector3d &point)
+{
+    if(uv.x() > 0.5 && uv.y() > 0.5){
+        return Vector3d(1,1,1);
+    }else if(uv.x() <= 0.5 && uv.y() <= 0.5){
+        return Vector3d(1,1,1);
+    }else{
+        return Vector3d(0.5,0.5,0.5);
+    }
 }

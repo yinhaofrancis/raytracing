@@ -31,6 +31,15 @@ Vector4d gamma(Vector4d &v, double gamma);
 
 namespace go
 {
+    class Texture{
+    public:
+        virtual ~Texture() = default;
+        virtual Vector3d color(Vector2d uv,Vector3d &point) = 0;
+    };
+    class Textureable {
+    public:
+        virtual void uv(Vector2d& uv,const Vector3d &point) = 0;
+    };
     class Interval
     {
     public:
@@ -95,6 +104,7 @@ namespace go
     struct HitResult
     {
         Vector3d hit, normal;
+        Vector2d uv;
         std::shared_ptr<Material> mat;
         double t;
         bool isFront;
@@ -114,19 +124,20 @@ namespace go
     class Lambertian : public Material
     {
     public:
-        Lambertian(Vector4d albedo);
+        Lambertian(Vector3d albedo);
+        Lambertian(Texture * texure);
         virtual bool scatter(const Ray &in, Vector4d &color, HitResult &hit, Ray &out);
 
     private:
-        Vector4d m_albedo;
+        std::shared_ptr<Texture> m_texture;
     };
     class Metal : public Material
     {
     public:
-        Metal(Vector4d albedo,double fuzz);
+        Metal(Vector3d albedo,double fuzz);
         virtual bool scatter(const Ray &in, Vector4d &color, HitResult &hit, Ray &out);
     private:
-        Vector4d m_albedo;
+        std::shared_ptr<Texture> m_texture;
         double m_fuzz;
     };
 
@@ -154,13 +165,13 @@ namespace go
         double m_max_distance;
     };
 
-    class Sphere : public Hitable
+    class Sphere : public Hitable,public Textureable
     {
     public:
         Sphere(Vector3d center, double radius, std::shared_ptr<Material>);
         Sphere(Vector3d center,Vector3d center2, double radius, std::shared_ptr<Material>);
         virtual bool hit(Ray &ray, Interval ray_t, HitResult &result);
-
+        void uv(Vector2d& uv,const Vector3d &point);
     private:
         Vector3d center(Ray&);
         std::shared_ptr<Material> m_mat;
@@ -169,16 +180,34 @@ namespace go
         double m_radius;
     };
 
-    class Planer : public Hitable
+    class Planer : public Hitable,public Textureable
     {
     public:
         Planer(Vector3d point, Vector3d normal, std::shared_ptr<Material>);
         virtual bool hit(Ray &ray, Interval ray_t, HitResult &result);
-
+        void uv(Vector2d& uv,const Vector3d &point);
     private:
         std::shared_ptr<Material> m_mat;
         Vector3d m_point;
         Vector3d m_normal;
+        Matrix3d m_uv_back;
     };
+
+    
+
+    class Color : public Texture{
+    public:
+        Color(Vector3d & albedo);
+        ~Color();
+        Vector3d color(Vector2d uv,Vector3d &point);
+    private:
+        Vector3d m_albedo;
+    };
+
+    class TestColor : public Texture{
+    public:
+        Vector3d color(Vector2d uv,Vector3d &point);
+    };
+
 
 } // namespace go
