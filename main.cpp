@@ -4,11 +4,11 @@
 #include "Render.hpp"
 #include <iostream>
 
-#define WIDTH  400
-#define HEIGHT 300
+#define WIDTH  1280
+#define HEIGHT 720
 
 #define RATIO (double(WIDTH) / HEIGHT)
-#define SAMPLES  1000
+#define SAMPLES  10000
 
 int main(int, char **)
 {
@@ -51,7 +51,7 @@ int main(int, char **)
 
 
     render.draw(SAMPLES);
-
+    sf.ppm("m.ppm");
     s.showWindow(sf);
 
     s.wait([](auto &sceen) {

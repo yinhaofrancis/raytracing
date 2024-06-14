@@ -32,6 +32,7 @@ namespace go
 
         int width();
         int height();
+        void ppm(const char *path);
     private:
         int m_width,m_height;
         uint32_t *buffer = nullptr;
