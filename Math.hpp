@@ -204,6 +204,21 @@ namespace go
         Vector3d m_albedo;
     };
 
+    class Pixel:public Texture{
+    public:
+        Pixel(uint32_t w,uint32_t h);
+        Vector3d color(Vector2d uv,Vector3d &point);
+        Vector3d operator()(Vector2i uv);
+        void assign(uint8_t * buffer,uint32_t size);
+    private:
+        uint8_t *m_pixels = nullptr;
+        uint32_t m_w;
+        uint32_t m_h;
+        uint32_t m_p = 3;
+        bool is_linear = true;
+
+    };
+
     class TestColor : public Texture{
     public:
         Vector3d color(Vector2d uv,Vector3d &point);

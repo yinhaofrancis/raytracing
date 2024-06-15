@@ -88,6 +88,52 @@ void go::Surface::ppm(const char *path)
     f.close();
 }
 
+void go::Surface::invalid()
+{
+    delete [] buffer;
+    buffer == nullptr;
+}
+
+void go::Surface::smooth()
+{
+    int size = 1;
+    uint32_t *n_buffer = new uint32_t[m_height * m_width];
+
+    for (int x = 0; x < m_width; x++)
+    {
+        for (int y = 0; y < m_height; y++)
+        {
+            uint32_t sumr = 0;
+            uint32_t sumg = 0;
+            uint32_t sumb = 0;
+            uint32_t suma = 0;
+            
+            for(int i = -size; i <= size; i++){
+                for (int j = -size; j <= size; j++)
+                {
+                    int index = (x + i)* m_height + (y + j);
+                    index = index < 0 ? 0 : index;
+                    index = index >= m_height * m_width ? m_height * m_width - 1 : index;
+                    uint32_t color = buffer[index];
+                    sumr += color >> 24;
+                    sumg += (color & 0x00ff0000) >> 16;
+                    sumb += (color & 0x0000ff00) >> 8;
+                    suma += (color & 0x000000ff);
+                }
+                
+            }
+            sumr = sumr / (size * 2 + 1) / (size * 2 + 1);
+            sumg = sumg / (size * 2 + 1) / (size * 2 + 1);
+            sumb = sumb / (size * 2 + 1) / (size * 2 + 1);
+            suma = suma / (size * 2 + 1) / (size * 2 + 1);
+            uint32_t sum = ((sumr & 0x000000ff) << 24) + ((sumg & 0x000000ff) << 16) + ((sumb & 0x000000ff) << 8) + (suma & 0x000000ff);
+            n_buffer[x * m_height + y] = sum;
+        }
+    }
+    delete [] buffer;
+    buffer = n_buffer;
+}
+
 void go::Screen::wait(std::function<void(Screen &)> drawcall)
 {
     while (true)
