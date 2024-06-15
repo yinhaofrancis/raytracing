@@ -8,7 +8,7 @@
 #define HEIGHT 300
 
 #define RATIO (double(WIDTH) / HEIGHT)
-#define SAMPLES  100
+#define SAMPLES  10
 
 int main(int, char **)
 {
@@ -17,8 +17,8 @@ int main(int, char **)
     go::Pixel* px = new go::Pixel(2,2);
     
     uint8_t pp[] = {
-        222,0,0,0,0,222,
-        222,0,222,0,222,0
+        222,222,222,0,0,0,
+        0,0,0,222,222,222
 
     };
     px->assign(pp,sizeof(pp));
@@ -35,7 +35,7 @@ int main(int, char **)
 
     auto d1 = std::make_shared<go::Dielectric>(1.5);
     
-    go::Camera c(Eigen::Vector3d(3, 2, 3), Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0.3, 0),pi / 5, RATIO,4.9,pi / 100);
+    go::Camera c(Eigen::Vector3d(3, 2, 3), Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0.3, 0),pi / 8, RATIO,4.9,pi / 100);
 
     go::Scene sc(100);
 
