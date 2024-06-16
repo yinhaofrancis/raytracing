@@ -22,7 +22,7 @@ go::Camera &go::Render::camera()
 void go::Render::draw(int samples)
 {
 
-    int max = 20;
+    int max = 5;
     std::atomic_int b = 0;
     for (size_t t = 0; t < max; t++)
     {
@@ -30,11 +30,12 @@ void go::Render::draw(int samples)
         std::thread m([this, samples,index,max,&b](){
             for (size_t i = index; i < m_surface.width(); i+=max)
             {
-                std::cout << "col:" << i << std::endl;
+               
                 for (size_t j = 0; j < m_surface.height(); j++)
                 {
                     renderPixel(i,j,samples);
                 }
+                std::cout << "col:" << i << std::endl;
             } 
             b+=1;
         });

@@ -369,7 +369,7 @@ Vector4d go::Scene::hit(Ray &ray)
             auto nextColor = hit(next);
             return c + color.cwiseProduct(nextColor);
         }
-        return Vector4d(0.0, 0.0, 0.0, 1);
+        return Vector4d(0.5, 0.5, 0.5, 1);
     }
 
     return Vector4d(0, 0, 0, 1);

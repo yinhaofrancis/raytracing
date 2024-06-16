@@ -8,7 +8,7 @@
 #define HEIGHT 300
 
 #define RATIO (double(WIDTH) / HEIGHT)
-#define SAMPLES  1000
+#define SAMPLES  100
 
 int main(int, char **)
 {
@@ -35,7 +35,7 @@ int main(int, char **)
 
     auto d1 = std::make_shared<go::Dielectric>(1.5);
 
-    auto light1 = std::make_shared<go::Light>(Vector3d(2,2,2));
+    auto light1 = std::make_shared<go::Light>(Vector3d(10,10,10));
     
     go::Camera c(Eigen::Vector3d(3, 2, 3), Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0.3, 0),pi / 4, RATIO,4.9,pi / 100);
 
