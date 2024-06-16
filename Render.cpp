@@ -57,5 +57,5 @@ void go::Render::renderPixel(int x, int y, int samples)
         color += tcolor;
     }
     color = color / samples;
-    m_surface.draw(gamma(color, 1), x, y);
+    m_surface.draw(gamma(color, 1.0), x, y);
 }

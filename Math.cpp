@@ -359,11 +359,17 @@ Vector4d go::Scene::hit(Ray &ray)
         {
             Ray next;
             Vector4d color;
+            auto em = result.mat->emitted(result);
             auto m = result.mat->scatter(ray, color, result, next);
+            Vector4d c;
+            c << em,1.0;
+            if(!m){
+                return c;
+            }
             auto nextColor = hit(next);
-            return color.cwiseProduct(nextColor);
+            return c + color.cwiseProduct(nextColor);
         }
-        return Vector4d(1, 1, 1, 1);
+        return Vector4d(0.0, 0.0, 0.0, 1);
     }
 
     return Vector4d(0, 0, 0, 1);
@@ -372,6 +378,11 @@ Vector4d go::Scene::hit(Ray &ray)
 bool go::Material::scatter(const Ray &in, Vector4d &color, HitResult &hit, Ray &out)
 {
     return false;
+}
+
+Vector3d go::Material::emitted(HitResult &hit)
+{
+    return Vector3d(0,0,0);
 }
 
 go::Lambertian::Lambertian(Vector3d albedo) : m_texture(std::make_shared<Color>(albedo))
@@ -538,4 +549,13 @@ void go::Pixel::assign(uint8_t *buffer, uint32_t size)
     size_t copys = std::min(size, m_h * m_p * m_w);
 
     memcpy(m_pixels, buffer, copys);
+}
+
+go::Light::Light(Vector3d light):m_light(light)
+{
+}
+
+Vector3d go::Light::emitted(HitResult &hit)
+{
+    return m_light;
 }

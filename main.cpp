@@ -8,7 +8,7 @@
 #define HEIGHT 300
 
 #define RATIO (double(WIDTH) / HEIGHT)
-#define SAMPLES  10
+#define SAMPLES  1000
 
 int main(int, char **)
 {
@@ -17,8 +17,8 @@ int main(int, char **)
     go::Pixel* px = new go::Pixel(2,2);
     
     uint8_t pp[] = {
-        222,222,222,0,0,0,
-        0,0,0,222,222,222
+        222,222,222,0,222,0,
+        0,0,222,222,222,222
 
     };
     px->assign(pp,sizeof(pp));
@@ -34,8 +34,10 @@ int main(int, char **)
     auto m1 = std::make_shared<go::Metal>(Vector3d(0.9,0.9,0.9),0);
 
     auto d1 = std::make_shared<go::Dielectric>(1.5);
+
+    auto light1 = std::make_shared<go::Light>(Vector3d(2,2,2));
     
-    go::Camera c(Eigen::Vector3d(3, 2, 3), Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0.3, 0),pi / 8, RATIO,4.9,pi / 100);
+    go::Camera c(Eigen::Vector3d(3, 2, 3), Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0.3, 0),pi / 4, RATIO,4.9,pi / 100);
 
     go::Scene sc(100);
 
@@ -43,7 +45,11 @@ int main(int, char **)
 
     go::Sphere* sq4 = new go::Sphere(Vector3d(1.3, 0, 0), 0.5,l2);
 
-    go::Sphere* sq2 = new go::Sphere(Vector3d(0., 0,0.),Vector3d(0., 0,0.), 0.5,m1);
+    go::Sphere* sq2 = new go::Sphere(Vector3d(0., 0,0.), 0.5,m1);
+
+    // go::Sphere* sq5 = new go::Sphere(Vector3d(0, 0.0, 1.2), 0.1,light1);
+
+    go::Sphere* sqlt = new go::Sphere(Vector3d(0., 3,0.), 1,light1);
 
      go::Sphere* sq3 = new go::Sphere(Vector3d(-1.1, 0,0.), 0.5,d1);
 
@@ -52,6 +58,8 @@ int main(int, char **)
     
 
 
+    sc.add(sqlt);
+    // sc.add(sq5);
     sc.add(sq2);
     sc.add(sq);
     sc.add(sq3);
