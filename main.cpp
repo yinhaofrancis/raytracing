@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "Screen.hpp"
-#include "Math.hpp"
+#include "Raytracing.hpp"
 #include "Render.hpp"
 #include <iostream>
 
