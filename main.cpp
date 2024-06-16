@@ -38,8 +38,11 @@ int main(int, char **)
     auto light1 = std::make_shared<go::Light>(Vector3d(10,10,10));
     
     go::Camera c(Eigen::Vector3d(3, 2, 3), Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0.3, 0),pi / 4, RATIO,4.9,pi / 100);
+    
 
-    go::Scene sc(100);
+    Vector4d ambient = Vector4d(1,1,1,1);
+
+    go::Scene sc(100,ambient);
 
     go::Sphere* sq = new go::Sphere(Vector3d(-1.5, 0, -2.5), 0.5,l1);
 
@@ -55,15 +58,18 @@ int main(int, char **)
 
     go::Planer* pla = new go::Planer(Vector3d(0,-0.5,0),Vector3d(0,1,0),l3);
 
+    go::Triangle* tra = new go::Triangle(Vector3d(-1,0.2,-1),Vector3d(-0.2,1.5,0),Vector3d(-2,0.5,0),m1);
+
     
 
 
-    sc.add(sqlt);
+    // sc.add(sqlt);
+    sc.add(tra);
     // sc.add(sq5);
-    sc.add(sq2);
-    sc.add(sq);
-    sc.add(sq3);
-    sc.add(sq4);
+    // sc.add(sq2);
+    // sc.add(sq);
+    // sc.add(sq3);
+    // sc.add(sq4);
     sc.add(pla);
 
     go::Render render(sf,c,sc);

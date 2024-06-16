@@ -82,7 +82,7 @@ namespace go
     class Scene
     {
     public:
-        Scene(double max_distace);
+        Scene(double max_distace,Vector4d& ambient);
         ~Scene();
         void add(Hitable *);
         bool hitOnce(Ray &ray, HitResult &out);
@@ -91,6 +91,7 @@ namespace go
     private:
         std::vector<Hitable *> items;
         double m_max_distance;
+        Vector4d m_ambient;
     };
 
 
@@ -107,6 +108,12 @@ namespace go
         Material() {}
         virtual bool scatter(const Ray &in, Vector4d &color, HitResult &hit, Ray &out);
         virtual Vector3d emitted(HitResult &hit);
+    };
+
+    class NormalColor : public Material{
+    public:
+        NormalColor();
+        virtual bool scatter(const Ray &in, Vector4d &color, HitResult &hit, Ray &out);
     };
 
     class Lambertian : public Material

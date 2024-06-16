@@ -118,7 +118,7 @@ go::Hitable::~Hitable()
 
 
 
-go::Scene::Scene(double distance) : m_max_distance(distance)
+go::Scene::Scene(double distance,Vector4d& m) : m_max_distance(distance),m_ambient(m)
 {
 }
 
@@ -172,7 +172,7 @@ Vector4d go::Scene::hit(Ray &ray)
             auto nextColor = hit(next);
             return c + color.cwiseProduct(nextColor);
         }
-        return Vector4d(0.1, 0.1, 0.1, 1);
+        return m_ambient;
     }
 
     return Vector4d(0, 0, 0, 1);
@@ -264,3 +264,12 @@ Vector3d go::Light::emitted(HitResult &hit)
     return m_light;
 }
 
+go::NormalColor::NormalColor()
+{
+}
+
+bool go::NormalColor::scatter(const Ray &in, Vector4d &color, HitResult &hit, Ray &out)
+{
+    
+    return true;
+}
