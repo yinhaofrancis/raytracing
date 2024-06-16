@@ -24,21 +24,7 @@ namespace go
     public:
         virtual void uv(Vector2d &uv, const Vector3d &point) = 0;
     };
-    class Interval
-    {
-    public:
-        Interval(double min, double max);
-        Interval();
-        static Interval max(double max);
-        double size() const;
-        bool contains(double x) const;
-        bool surrounds(double x) const;
-        Interval expands(double x) const;
 
-    private:
-        double m_min;
-        double m_max;
-    };
     class Ray
     {
     public:

@@ -32,3 +32,24 @@ Vector3d random_in_unit_disk();
 const int max_depth = 20;
 
 Vector4d gamma(Vector4d &v, double gamma);
+
+
+
+namespace go
+{
+    class Interval
+    {
+    public:
+        Interval(double min, double max);
+        Interval();
+        static Interval max(double max);
+        double size() const;
+        bool contains(double x) const;
+        bool surrounds(double x) const;
+        Interval expands(double x) const;
+
+    private:
+        double m_min;
+        double m_max;
+    };
+} // namespace go

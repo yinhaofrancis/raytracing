@@ -63,3 +63,42 @@ Vector4d gamma(Vector4d &v, double gamma)
 {
     return Vector4d(std::pow(v.x(), gamma), std::pow(v.y(), gamma), std::pow(v.z(), gamma), std::pow(v.w(), gamma));
 }
+
+
+
+go::Interval::Interval(double min, double max) : m_min(min), m_max(max)
+{
+}
+
+go::Interval::Interval() : Interval(+infinity, -infinity)
+{
+}
+
+go::Interval go::Interval::max(double max)
+{
+    return Interval(0.000001, max);
+}
+
+double go::Interval::size() const
+{
+    return m_max - m_min;
+}
+
+bool go::Interval::contains(double x) const
+{
+    return m_min <= x && m_max >= x;
+}
+
+bool go::Interval::surrounds(double x) const
+{
+    return m_min < x && m_max > x;
+    ;
+}
+
+go::Interval go::Interval::expands(double x) const
+{
+    Interval m(*this);
+    m.m_min -= x;
+    m.m_max += x;
+    return m;
+}

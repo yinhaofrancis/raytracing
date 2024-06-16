@@ -177,42 +177,7 @@ Vector3d go::Sphere::center(Ray &t)
     return mix(m_center, m_center2, t.time());
 }
 
-go::Interval::Interval(double min, double max) : m_min(min), m_max(max)
-{
-}
 
-go::Interval::Interval() : Interval(+infinity, -infinity)
-{
-}
-
-go::Interval go::Interval::max(double max)
-{
-    return Interval(0.000001, max);
-}
-
-double go::Interval::size() const
-{
-    return m_max - m_min;
-}
-
-bool go::Interval::contains(double x) const
-{
-    return m_min <= x && m_max >= x;
-}
-
-bool go::Interval::surrounds(double x) const
-{
-    return m_min < x && m_max > x;
-    ;
-}
-
-go::Interval go::Interval::expands(double x) const
-{
-    Interval m(*this);
-    m.m_min -= x;
-    m.m_max += x;
-    return m;
-}
 
 go::Planer::Planer(Vector3d point, Vector3d normal, std::shared_ptr<Material> mat) : m_point(point), m_normal(normal), m_mat(mat)
 {
