@@ -108,8 +108,8 @@ bool go::Triangle::hit(Ray &ray, Interval ray_t, HitResult &result)
         return false;
     }
     Vector3d normal = ray.direction().dot(m_normal) < 0 ? -m_normal : m_normal;
-    double A = m_normal.dot(ray.direction());
-    double B = (m_point[0].point - ray.location()).dot(m_normal);
+    double A = normal.dot(ray.direction());
+    double B = (m_point[0].point - ray.location()).dot(normal);
     double t = B / A;
     Vector3d hit = ray.exec(t);
     if (!contain(hit))

@@ -22,7 +22,7 @@ go::Camera &go::Render::camera()
 void go::Render::draw(int samples)
 {
 
-    int max = 5;
+    int max = 1;
     std::atomic_int b = 0;
     for (size_t t = 0; t < max; t++)
     {

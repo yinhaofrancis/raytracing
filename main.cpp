@@ -35,6 +35,8 @@ int main(int, char **)
 
     auto d1 = std::make_shared<go::Dielectric>(1.5);
 
+    auto db = std::make_shared<go::NormalColor>();
+
     auto light1 = std::make_shared<go::Light>(Vector3d(10,10,10));
     
     go::Camera c(Eigen::Vector3d(3, 2, 3), Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0.3, 0),pi / 4, RATIO,4.9,pi / 100);
@@ -58,7 +60,7 @@ int main(int, char **)
 
     go::Planer* pla = new go::Planer(Vector3d(0,-0.5,0),Vector3d(0,1,0),l3);
 
-    go::Triangle* tra = new go::Triangle(Vector3d(-1,0.2,-1),Vector3d(-0.2,1.5,0),Vector3d(-2,0.5,0),m1);
+    go::Triangle* tra = new go::Triangle(Vector3d(-1,0.2,-1),Vector3d(-0.2,1.5,0),Vector3d(-2,0.5,0),db);
 
     
 
