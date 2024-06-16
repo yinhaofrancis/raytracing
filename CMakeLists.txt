@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.20.0)
 project(glgo VERSION 0.1.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
-add_executable(glgo main.cpp Screen.cpp Raytracing.cpp Math.cpp Render.cpp)
+add_executable(glgo main.cpp Screen.cpp Raytracing.cpp Texture.cpp Primitives.cpp Math.cpp Render.cpp)
 
 find_package(Eigen3 REQUIRED)
 find_package(SDL2 REQUIRED)

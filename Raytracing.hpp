@@ -8,17 +8,12 @@
 #include <vector>
 #include "Math.hpp"
 
+#include "Texture.hpp"
 using namespace Eigen;
-
 
 namespace go
 {
-    class Texture
-    {
-    public:
-        virtual ~Texture() = default;
-        virtual Vector3d color(Vector2d uv, Vector3d &point) = 0;
-    };
+    class Material;
     class Textureable
     {
     public:
@@ -64,15 +59,6 @@ namespace go
         double m_disk_radius;
     };
 
-    struct HitResult;
-    class Material
-    {
-    public:
-        Material() {}
-        virtual bool scatter(const Ray &in, Vector4d &color, HitResult &hit, Ray &out);
-        virtual Vector3d emitted(HitResult &hit);
-    };
-
     struct HitResult
     {
         Vector3d hit, normal;
@@ -91,6 +77,36 @@ namespace go
 
     private:
         bool m_front = true;
+    };
+
+    class Scene
+    {
+    public:
+        Scene(double max_distace);
+        ~Scene();
+        void add(Hitable *);
+        bool hitOnce(Ray &ray, HitResult &out);
+        Vector4d hit(Ray &ray);
+
+    private:
+        std::vector<Hitable *> items;
+        double m_max_distance;
+    };
+
+
+
+} // namespace go
+
+
+// material
+namespace go
+{
+    class Material
+    {
+    public:
+        Material() {}
+        virtual bool scatter(const Ray &in, Vector4d &color, HitResult &hit, Ray &out);
+        virtual Vector3d emitted(HitResult &hit);
     };
 
     class Lambertian : public Material
@@ -113,7 +129,6 @@ namespace go
         std::shared_ptr<Texture> m_texture;
         double m_fuzz;
     };
-
     class Dielectric : public Material
     {
 
@@ -124,91 +139,13 @@ namespace go
     private:
         double m_index;
     };
-
-    class Scene
-    {
-    public:
-        Scene(double max_distace);
-        ~Scene();
-        void add(Hitable *);
-        bool hitOnce(Ray &ray, HitResult &out);
-        Vector4d hit(Ray &ray);
-
-    private:
-        std::vector<Hitable *> items;
-        double m_max_distance;
-    };
-
     class Light : public Material
     {
     public:
         Light(Vector3d light);
         virtual Vector3d emitted(HitResult &hit);
+
     private:
         Vector3d m_light;
     };
-
-    class Sphere : public Hitable, public Textureable
-    {
-    public:
-        Sphere(Vector3d center, double radius, std::shared_ptr<Material>);
-        Sphere(Vector3d center, Vector3d center2, double radius, std::shared_ptr<Material>);
-        virtual bool hit(Ray &ray, Interval ray_t, HitResult &result);
-        void uv(Vector2d &uv, const Vector3d &point);
-
-    private:
-        Vector3d center(Ray &);
-        std::shared_ptr<Material> m_mat;
-        Vector3d m_center;
-        Vector3d m_center2;
-        double m_radius;
-    };
-
-    class Planer : public Hitable, public Textureable
-    {
-    public:
-        Planer(Vector3d point, Vector3d normal, std::shared_ptr<Material>);
-        virtual bool hit(Ray &ray, Interval ray_t, HitResult &result);
-        void uv(Vector2d &uv, const Vector3d &point);
-
-    private:
-        std::shared_ptr<Material> m_mat;
-        Vector3d m_point;
-        Vector3d m_normal;
-        Matrix3d m_uv_back;
-    };
-
-    class Color : public Texture
-    {
-    public:
-        Color(Vector3d &albedo);
-        ~Color();
-        Vector3d color(Vector2d uv, Vector3d &point);
-
-    private:
-        Vector3d m_albedo;
-    };
-
-    class Pixel : public Texture
-    {
-    public:
-        Pixel(uint32_t w, uint32_t h);
-        Vector3d color(Vector2d uv, Vector3d &point);
-        Vector3d operator()(Vector2i uv);
-        void assign(uint8_t *buffer, uint32_t size);
-
-    private:
-        uint8_t *m_pixels = nullptr;
-        uint32_t m_w;
-        uint32_t m_h;
-        uint32_t m_p = 3;
-        bool is_linear = true;
-    };
-
-    class TestColor : public Texture
-    {
-    public:
-        Vector3d color(Vector2d uv, Vector3d &point);
-    };
-
 } // namespace go
