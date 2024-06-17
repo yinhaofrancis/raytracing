@@ -107,7 +107,6 @@ bool go::Triangle::hit(Ray &ray, Interval ray_t, HitResult &result)
     {
         return false;
     }
-    Vector3d normal = normal;
     double A = m_normal.dot(ray.direction());
     double B = (m_point[0].point - ray.location()).dot(m_normal);
     double t = B / A;
@@ -122,7 +121,7 @@ bool go::Triangle::hit(Ray &ray, Interval ray_t, HitResult &result)
 
     result.t = t;
     result.hit = ray.exec(t);
-    result.normal = normal;
+    result.normal = m_normal;
     result.mat = m_mat;
     result.isFront = true;
     this->uv(result.uv, result.hit);
@@ -152,6 +151,15 @@ bool go::Triangle::contain(const Vector3d &p)
     return same_size(m_point[0].point, m_point[1].point, m_point[2].point, p) &&
            same_size(m_point[1].point, m_point[2].point, m_point[0].point, p) &&
            same_size(m_point[2].point, m_point[0].point, m_point[1].point, p);
+}
+
+void go::Triangle::transform(const Matrix4d& transform)
+{
+    for (size_t i = 0; i < 3; i++)
+    {
+        m_point[i].point = (transform * (m_point[i].point.homogeneous())).head<3>();
+    }
+    m_normal = (transform * (m_normal.homogeneous())).head<3>();
 }
 
 bool go::Triangle::same_size(const Vector3d &point0, const Vector3d &point1, const Vector3d &point2, const Vector3d &p)
@@ -225,5 +233,40 @@ void go::Quad::uv(Vector2d &uv, const Vector3d &point)
     }
     if(m_triangles[1].contain(point)){
         m_triangles[1].uv(uv,point);
+    }
+}
+
+void go::Quad::transform(const Matrix4d &transform)
+{
+    for (size_t i = 0; i < 2; i++)
+    {
+        m_triangles[i].transform(transform);
+    }
+    
+}
+
+go::Box::Box(Vector3d &&point, Vector2d &&size, std::shared_ptr<Material>)
+{
+    for (size_t i = 0; i < 6; i++)
+    {
+        /* code */
+    }
+    
+}
+
+bool go::Box::hit(Ray &ray, Interval ray_t, HitResult &result)
+{
+    return false;
+}
+
+void go::Box::uv(Vector2d &uv, const Vector3d &point)
+{
+}
+
+void go::Box::transform(const Matrix4d &transform)
+{
+    for (size_t i = 0; i < 6; i++)
+    {
+        m_quad[i].transform(transform);
     }
 }

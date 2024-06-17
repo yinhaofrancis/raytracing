@@ -14,12 +14,6 @@ using namespace Eigen;
 namespace go
 {
     class Material;
-    class Textureable
-    {
-    public:
-        virtual void uv(Vector2d &uv, const Vector3d &point) = 0;
-    };
-
     class Ray
     {
     public:
@@ -29,6 +23,7 @@ namespace go
         void reflect(Vector3d normal, Vector3d hitPoint, double fuzz);
         void refract(Vector3d normal, Vector3d hitPoint, double fract);
         void hitRandom(Vector3d normal, Vector3d hitPoint);
+        void fullRandom(Vector3d hitPoint);
         Vector3d location() const;
         Vector3d direction() const;
         Vector3d exec(double t);
@@ -82,7 +77,7 @@ namespace go
     class Scene
     {
     public:
-        Scene(double max_distace,Vector4d& ambient);
+        Scene(double max_distace, Vector4d &ambient);
         ~Scene();
         void add(Hitable *);
         bool hitOnce(Ray &ray, HitResult &out);
@@ -94,10 +89,7 @@ namespace go
         Vector4d m_ambient;
     };
 
-
-
 } // namespace go
-
 
 // material
 namespace go
@@ -110,7 +102,8 @@ namespace go
         virtual Vector3d emitted(HitResult &hit);
     };
 
-    class NormalColor : public Material{
+    class NormalColor : public Material
+    {
     public:
         NormalColor();
         virtual bool scatter(const Ray &in, Vector4d &color, HitResult &hit, Ray &out);
@@ -154,5 +147,15 @@ namespace go
 
     private:
         Vector3d m_light;
+    };
+
+    class isotropic : public Material
+    {
+    public:
+        isotropic(Vector3d albedo);
+        isotropic(std::shared_ptr<Texture> tex);
+        virtual bool scatter(const Ray &in, Vector4d &color, HitResult &hit, Ray &out);
+    private:
+        std::shared_ptr<Texture> m_texture;
     };
 } // namespace go

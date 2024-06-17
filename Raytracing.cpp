@@ -39,7 +39,12 @@ void go::Ray::hitRandom(Vector3d normal, Vector3d hitPoint)
     m_location = hitPoint;
     this->m_max -= 1;
 }
-
+void go::Ray::fullRandom(Vector3d hitPoint)
+{
+    m_direction = random_in_unit_sphere();
+    m_location = hitPoint;
+    this->m_max -= 1;
+}
 void go::Ray::lambertian(Vector3d normal, Vector3d hitPoint)
 {
     m_direction = random_in_unit_sphere() + normal;
@@ -47,7 +52,6 @@ void go::Ray::lambertian(Vector3d normal, Vector3d hitPoint)
     {
         m_direction = normal;
     }
-    // m_direction.normalize();
     m_location = hitPoint;
     this->m_max -= 1;
 }
@@ -272,6 +276,26 @@ bool go::NormalColor::scatter(const Ray &in, Vector4d &color, HitResult &hit, Ra
 {
     out = in;
     out.lambertian(hit.normal, hit.hit);
-    color = (hit.normal.homogeneous() + Vector4d(1,1,1,1)) * 0.5;
+    Vector4d m = hit.normal.homogeneous();
+    m[3] = 1;
+    color = Vector4d(0.8,0.5,0.3,1);
+    return true;
+}
+
+go::isotropic::isotropic(Vector3d albedo):m_texture(std::make_shared<Color>(albedo))
+{
+
+}
+
+go::isotropic::isotropic(std::shared_ptr<Texture> tex)
+{
+}
+
+bool go::isotropic::scatter(const Ray &in, Vector4d &color, HitResult &hit, Ray &out)
+{
+    Vector3d m = m_texture->color(hit.uv,hit.hit);
+    color = m.homogeneous();
+    color[3] = 1;
+    out.fullRandom(hit.hit);
     return true;
 }

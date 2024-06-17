@@ -39,12 +39,12 @@ int main(int, char **)
 
     auto light1 = std::make_shared<go::Light>(Vector3d(10,10,10));
     
-    go::Camera c(Eigen::Vector3d(0, 0, 5), Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0.3, 0),pi / 4, RATIO,4.9,pi / 100);
+    go::Camera c(Eigen::Vector3d(0, 0, 3.5), Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0.3, 0),pi / 4, RATIO,4.9,0 * pi / 100);
     
 
-    Vector4d ambient = Vector4d(1,1,1,1);
+    Vector4d ambient = Vector4d(0.1,0.1,0.1,1);
 
-    go::Scene sc(100,ambient);
+    go::Scene sc(1000,ambient);
 
     go::Sphere* sq = new go::Sphere(Vector3d(-1.5, 0, -2.5), 0.5,l1);
 
@@ -52,7 +52,7 @@ int main(int, char **)
 
     go::Sphere* sq2 = new go::Sphere(Vector3d(0., 0,0.), 0.5,m1);
 
-    go::Sphere* sq5 = new go::Sphere(Vector3d(0, 0,0), 0.05,light1);
+    go::Sphere* sq5 = new go::Sphere(Vector3d(0, 0.7,-0.7), 0.3,light1);
 
     go::Sphere* sqlt = new go::Sphere(Vector3d(0., 3,0.), 1,light1);
 
@@ -72,6 +72,15 @@ int main(int, char **)
 
     go::Quad* qua4 = new go::Quad(Vector3d(1,1,1),Vector3d(-1,1,1),Vector3d(-1,1,-1),db);
 
+    go::Quad* qua5 = new go::Quad(Vector3d(0.6,0.99,0.6),Vector3d(-0.6,0.99,0.6),Vector3d(-0.6,0.99,-0.6),light1);
+
+
+    go::Sphere* qsq = new go::Sphere(Vector3d(-0.5, -0.8, 0), 0.2,l2);
+
+    go::Sphere* qsq1 = new go::Sphere(Vector3d(0.0, -0.8, 0.5), 0.2,m1);
+
+    go::Sphere* qsq2 = new go::Sphere(Vector3d(0.5, -0.6,0.5), 0.2,d1);
+
     // sc.add(sqlt);
     // sc.add(tra);
     // sc.add(sq5);
@@ -85,7 +94,10 @@ int main(int, char **)
     sc.add(qua1);
     sc.add(qua3);
     sc.add(qua4);
-    sc.add(sq5);
+    sc.add(qua5);
+    sc.add(qsq);
+    sc.add(qsq1);
+    sc.add(qsq2);
     go::Render render(sf,c,sc);
 
 
