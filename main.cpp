@@ -8,7 +8,7 @@
 #define HEIGHT 300
 
 #define RATIO (double(WIDTH) / HEIGHT)
-#define SAMPLES  10
+#define SAMPLES  100
 
 int main(int, char **)
 {
@@ -39,7 +39,7 @@ int main(int, char **)
 
     auto light1 = std::make_shared<go::Light>(Vector3d(10,10,10));
     
-    go::Camera c(Eigen::Vector3d(3, 2, 3), Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0.3, 0),pi / 4, RATIO,4.9,pi / 100);
+    go::Camera c(Eigen::Vector3d(0, 0, 5), Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0.3, 0),pi / 4, RATIO,4.9,pi / 100);
     
 
     Vector4d ambient = Vector4d(1,1,1,1);
@@ -52,7 +52,7 @@ int main(int, char **)
 
     go::Sphere* sq2 = new go::Sphere(Vector3d(0., 0,0.), 0.5,m1);
 
-    // go::Sphere* sq5 = new go::Sphere(Vector3d(0, 0.0, 1.2), 0.1,light1);
+    go::Sphere* sq5 = new go::Sphere(Vector3d(0, 0,0), 0.05,light1);
 
     go::Sphere* sqlt = new go::Sphere(Vector3d(0., 3,0.), 1,light1);
 
@@ -60,20 +60,32 @@ int main(int, char **)
 
     go::Planer* pla = new go::Planer(Vector3d(0,-0.5,0),Vector3d(0,1,0),l3);
 
-    go::Triangle* tra = new go::Triangle(Vector3d(-1,0.2,-1),Vector3d(-0.2,1.5,0),Vector3d(-2,0.5,0),db);
+    go::Triangle* tra = new go::Triangle(Vector3d(-1,0.2,-1),Vector3d(1,1,-1),Vector3d(-2,0.5,0),db);
 
-    
+    go::Quad* qua = new go::Quad(Vector3d(1,1,-1),Vector3d(-1,1,-1),Vector3d(-1,-1,-1),db);
 
+    go::Quad* qua1 = new go::Quad(Vector3d(-1,1,-1),Vector3d(-1,1,1),Vector3d(-1,-1,1),db);
+
+    go::Quad* qua2 = new go::Quad(Vector3d(1,-1,-1),Vector3d(1,-1,1),Vector3d(1,1,1),db);
+
+    go::Quad* qua3 = new go::Quad(Vector3d(-1,-1,1),Vector3d(1,-1,1),Vector3d(1,-1,-1),db);
+
+    go::Quad* qua4 = new go::Quad(Vector3d(1,1,1),Vector3d(-1,1,1),Vector3d(-1,1,-1),db);
 
     // sc.add(sqlt);
-    sc.add(tra);
+    // sc.add(tra);
     // sc.add(sq5);
     // sc.add(sq2);
     // sc.add(sq);
     // sc.add(sq3);
     // sc.add(sq4);
-    sc.add(pla);
-
+    // sc.add(pla);
+    sc.add(qua);
+    sc.add(qua2);
+    sc.add(qua1);
+    sc.add(qua3);
+    sc.add(qua4);
+    sc.add(sq5);
     go::Render render(sf,c,sc);
 
 

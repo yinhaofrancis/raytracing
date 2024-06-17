@@ -272,6 +272,6 @@ bool go::NormalColor::scatter(const Ray &in, Vector4d &color, HitResult &hit, Ra
 {
     out = in;
     out.lambertian(hit.normal, hit.hit);
-    color = Vector4d(1,0,0,1);
+    color = (hit.normal.homogeneous() + Vector4d(1,1,1,1)) * 0.5;
     return true;
 }

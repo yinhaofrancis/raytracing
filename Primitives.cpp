@@ -103,14 +103,17 @@ void go::Planer::uv(Vector2d &uv, const Vector3d &point)
 
 bool go::Triangle::hit(Ray &ray, Interval ray_t, HitResult &result)
 {
-    if (ray.direction().dot(m_normal) == 0)
+    if (ray.direction().dot(m_normal) >= 0)
     {
         return false;
     }
-    Vector3d normal = ray.direction().dot(m_normal) < 0 ? -m_normal : m_normal;
-    double A = normal.dot(ray.direction());
-    double B = (m_point[0].point - ray.location()).dot(normal);
+    Vector3d normal = normal;
+    double A = m_normal.dot(ray.direction());
+    double B = (m_point[0].point - ray.location()).dot(m_normal);
     double t = B / A;
+    if(t <= 0.001){
+        return false;
+    }
     Vector3d hit = ray.exec(t);
     if (!contain(hit))
     {
@@ -144,14 +147,14 @@ void go::Triangle::uv(Vector2d &uv, const Vector3d &point)
     uv = uvm * pnp;
 }
 
-bool go::Triangle::contain(Vector3d &p)
+bool go::Triangle::contain(const Vector3d &p)
 {
     return same_size(m_point[0].point, m_point[1].point, m_point[2].point, p) &&
            same_size(m_point[1].point, m_point[2].point, m_point[0].point, p) &&
            same_size(m_point[2].point, m_point[0].point, m_point[1].point, p);
 }
 
-bool go::Triangle::same_size(Vector3d &point0, Vector3d &point1, Vector3d &point2, Vector3d &p)
+bool go::Triangle::same_size(const Vector3d &point0, const Vector3d &point1, const Vector3d &point2, const Vector3d &p)
 {
     Vector3d ab = point1 - point0;
     Vector3d ac = point2 - point0;
@@ -159,7 +162,11 @@ bool go::Triangle::same_size(Vector3d &point0, Vector3d &point1, Vector3d &point
     Vector3d v1 = ab.cross(ac);
     Vector3d v2 = ab.cross(ap);
 
-    return v1.dot(v2) >= 0;
+    return v1.dot(v2) >= 0 && v1.normalized().dot(v2.normalized()) == 1;
+}
+
+go::Triangle::Triangle()
+{
 }
 
 go::Triangle::Triangle(go::Vertex point1, go::Vertex point2, go::Vertex point3, std::shared_ptr<Material> m) : m_mat(m)
@@ -178,4 +185,45 @@ go::Triangle::Triangle(Vector3d&& point1, Vector3d&& point2, Vector3d&& point3, 
     m_point[2] = {point3,Vector2d(0,1)};
     m_normal = (point2 - point1).cross(point3 - point2);
     m_normal.normalize();
+}
+go::Triangle::Triangle(Vector3d& point1, Vector3d& point2, Vector3d& point3, std::shared_ptr<Material> m) : m_mat(m)
+{
+    m_point[0] = {point1,Vector2d(0,0)};
+    m_point[1] = {point2,Vector2d(1,0)};
+    m_point[2] = {point3,Vector2d(0,1)};
+    m_normal = (point2 - point1).cross(point3 - point2);
+    m_normal.normalize();
+}
+
+go::Quad::Quad(Vertex point1, Vertex point2, Vertex point3, Vertex point4, std::shared_ptr<Material> m)
+{
+    m_triangles[0] = go::Triangle(point1,point2,point3,m);
+    m_triangles[1] = go::Triangle(point1,point3,point4,m);
+}
+go::Quad::Quad(Vector3d &&point1, Vector3d &&point2, Vector3d &&point3, std::shared_ptr<Material> m)
+{
+    Vector3d point4 = point1 + point3 - point2;
+    m_triangles[0] = go::Triangle(point1,point2,point3,m);
+    m_triangles[1] = go::Triangle(point1,point3,point4,m);
+}
+
+bool go::Quad::hit(Ray &ray, Interval ray_t, HitResult &result)
+{
+    if (m_triangles[0].hit(ray,ray_t,result)){
+        return true;
+    }
+    if (m_triangles[1].hit(ray,ray_t,result)){
+        return true;
+    }
+    return false;
+}
+
+void go::Quad::uv(Vector2d &uv, const Vector3d &point)
+{
+    if(m_triangles[0].contain(point)){
+        m_triangles[0].uv(uv,point);
+    }
+    if(m_triangles[1].contain(point)){
+        m_triangles[1].uv(uv,point);
+    }
 }

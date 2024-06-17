@@ -41,19 +41,29 @@ namespace go
     class Triangle : public Hitable, public Textureable
     {
     public:
+        Triangle();
         Triangle(Vertex point1, Vertex point2, Vertex point3, std::shared_ptr<Material>);
         Triangle(Vector3d&& point1, Vector3d&& point2, Vector3d&& point3, std::shared_ptr<Material>);
+        Triangle(Vector3d& point1, Vector3d& point2, Vector3d& point3, std::shared_ptr<Material>);
         virtual bool hit(Ray &ray, Interval ray_t, HitResult &result);
         virtual void uv(Vector2d &uv, const Vector3d &point);
-        bool contain(Vector3d &p);
+        bool contain(const Vector3d &p);
 
     private:
 
-        bool same_size(Vector3d &point1, Vector3d &point2, Vector3d &point3,Vector3d &p);
+        bool same_size(const Vector3d &point1, const Vector3d &point2, const Vector3d &point3, const Vector3d &p);
         std::shared_ptr<Material> m_mat;
         Vertex m_point[3];
         Vector3d m_normal;
     };
-
+    class Quad: public Hitable, public Textureable{
+    public:
+        Quad(Vertex point1, Vertex point2, Vertex point3,Vertex point4, std::shared_ptr<Material>);
+        Quad(Vector3d&& point1, Vector3d&& point2, Vector3d&& point3, std::shared_ptr<Material>);
+        virtual bool hit(Ray &ray, Interval ray_t, HitResult &result);
+        virtual void uv(Vector2d &uv, const Vector3d &point);
+    private:
+        Triangle m_triangles[2];
+    };
 
 } // namespace go

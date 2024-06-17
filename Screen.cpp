@@ -91,7 +91,7 @@ void go::Surface::ppm(const char *path)
 void go::Surface::invalid()
 {
     delete [] buffer;
-    buffer == nullptr;
+    buffer = nullptr;
 }
 
 void go::Surface::smooth()
