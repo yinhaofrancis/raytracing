@@ -8,7 +8,7 @@
 #define HEIGHT 600
 
 #define RATIO (double(WIDTH) / HEIGHT)
-#define SAMPLES  1
+#define SAMPLES  100
 
 
 // void scene1(){
@@ -45,10 +45,10 @@ int main(int, char **)
 
     auto light1 = std::make_shared<go::Light>(Vector3d(5,5,5));
     
-    go::Camera c(Eigen::Vector3d(0, 0, 3.5), Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0.3, 0),pi / 4, RATIO,4.9,0 * pi / 100);
+    go::Camera c(Eigen::Vector3d(2, 3, 3.5), Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0.3, 0),pi / 4, RATIO,4.9,0 * pi / 100);
     
 
-    Vector4d ambient = Vector4d(1,1,1,1);
+    Vector4d ambient = Vector4d(0.1,0.1,0.1,1);
 
     go::Scene sc(1000,ambient);
 
@@ -95,15 +95,15 @@ int main(int, char **)
 
     go::Sphere* qsq2 = new go::Sphere(Vector3d(0.5, -0.78,0.5), 0.2,d1);
 
-    // sc.add(sqlt);
+    sc.add(sqlt);
     // sc.add(tra);
     // sc.add(sq5);
-    // sc.add(sq2);
-    // sc.add(sq);
-    // sc.add(sq3);
-    // sc.add(sq4);
-    // sc.add(pla);
-    sc.add(tri);
+    sc.add(sq2);
+    sc.add(sq);
+    sc.add(sq3);
+    sc.add(sq4);
+    sc.add(pla);
+    // sc.add(tri);
     // sc.add(qua2);
     // sc.add(qua1);
     // sc.add(qua3);
