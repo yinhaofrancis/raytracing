@@ -13,18 +13,8 @@ Vector3d go::Color::color(Vector2d uv, Vector3d &point)
 
 Vector3d go::TestColor::color(Vector2d uv, Vector3d &point)
 {
-    if (uv.x() > 0.5 && uv.y() > 0.5)
-    {
-        return Vector3d(1, 1, 1);
-    }
-    else if (uv.x() <= 0.5 && uv.y() <= 0.5)
-    {
-        return Vector3d(1, 1, 1);
-    }
-    else
-    {
-        return Vector3d(0.5, 0.5, 0.5);
-    }
+    return uv.homogeneous();
+    // return (point + Vector3d(1,1,1)) / 2.0;
 }
 
 go::Pixel::Pixel(uint32_t w, uint32_t h) : m_pixels(new uint8_t[w * h * 3]), m_w(w), m_h(h), m_p(3)

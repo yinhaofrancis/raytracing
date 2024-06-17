@@ -33,7 +33,10 @@ const int max_depth = 20;
 
 Vector4d gamma(Vector4d &v, double gamma);
 
+double crossProductZ(const Vector3d& a, const Vector3d& b, const Vector3d& c);
 
+Vector2d interpolateUV(const Vector3d& p, const Vector3d& v1, const Vector3d& v2, const Vector3d& v3,
+                      const Vector2d& uv1, const Vector2d& uv2, const Vector2d& uv3);
 
 namespace go
 {

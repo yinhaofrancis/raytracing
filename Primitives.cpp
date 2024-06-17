@@ -130,20 +130,15 @@ bool go::Triangle::hit(Ray &ray, Interval ray_t, HitResult &result)
 
 void go::Triangle::uv(Vector2d &uv, const Vector3d &point)
 {
-    Vector3d ap = point - m_point[0].point;
-    Vector3d ab = m_point[1].point - m_point[0].point;
-    Vector2d abuvx = m_point[1].uv - m_point[0].uv;
-    Vector3d ac = m_point[2].point - m_point[0].point;
-    Vector2d acuvy = m_point[2].uv - m_point[0].uv;
-
-    Matrix3d m;
-    m << ab,ac,m_normal;
-    Vector3d np = m * point;
-    Vector2d pnp(np.x(),np.y());
-
-    Matrix2d uvm;
-    uvm << abuvx,acuvy;
-    uv = uvm * pnp;
+    uv = interpolateUV(
+        point,
+        this->m_point[0].point,
+        this->m_point[1].point,
+        this->m_point[2].point,
+        this->m_point[0].uv,
+        this->m_point[1].uv,
+        this->m_point[2].uv
+        );
 }
 
 bool go::Triangle::contain(const Vector3d &p)
@@ -186,31 +181,9 @@ go::Triangle::Triangle(go::Vertex point1, go::Vertex point2, go::Vertex point3, 
     m_normal.normalize();
 }
 
-go::Triangle::Triangle(Vector3d&& point1, Vector3d&& point2, Vector3d&& point3, std::shared_ptr<Material> m) : m_mat(m)
-{
-    m_point[0] = {point1,Vector2d(0,0)};
-    m_point[1] = {point2,Vector2d(1,0)};
-    m_point[2] = {point3,Vector2d(0,1)};
-    m_normal = (point2 - point1).cross(point3 - point2);
-    m_normal.normalize();
-}
-go::Triangle::Triangle(Vector3d& point1, Vector3d& point2, Vector3d& point3, std::shared_ptr<Material> m) : m_mat(m)
-{
-    m_point[0] = {point1,Vector2d(0,0)};
-    m_point[1] = {point2,Vector2d(1,0)};
-    m_point[2] = {point3,Vector2d(0,1)};
-    m_normal = (point2 - point1).cross(point3 - point2);
-    m_normal.normalize();
-}
 
 go::Quad::Quad(Vertex point1, Vertex point2, Vertex point3, Vertex point4, std::shared_ptr<Material> m)
 {
-    m_triangles[0] = go::Triangle(point1,point2,point3,m);
-    m_triangles[1] = go::Triangle(point1,point3,point4,m);
-}
-go::Quad::Quad(Vector3d &&point1, Vector3d &&point2, Vector3d &&point3, std::shared_ptr<Material> m)
-{
-    Vector3d point4 = point1 + point3 - point2;
     m_triangles[0] = go::Triangle(point1,point2,point3,m);
     m_triangles[1] = go::Triangle(point1,point3,point4,m);
 }
@@ -269,4 +242,9 @@ void go::Box::transform(const Matrix4d &transform)
     {
         m_quad[i].transform(transform);
     }
+}
+
+go::Vertex::Vertex(double x, double y, double z, double u, double v):point(x,y,z),uv(u,v)
+{
+
 }

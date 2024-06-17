@@ -37,6 +37,8 @@ namespace go
     {
         Vector3d point;
         Vector2d uv;
+        Vertex(double x,double y,double z,double u,double v);
+        Vertex() {}
     };
     class Triangle : public Hitable
     {
@@ -60,7 +62,6 @@ namespace go
     public:
         Quad() {}
         Quad(Vertex point1, Vertex point2, Vertex point3, Vertex point4, std::shared_ptr<Material>);
-        Quad(Vector3d &&point1, Vector3d &&point2, Vector3d &&point3, std::shared_ptr<Material>);
         virtual bool hit(Ray &ray, Interval ray_t, HitResult &result);
         virtual void uv(Vector2d &uv, const Vector3d &point);
         void transform(const Matrix4d& transform);

@@ -51,8 +51,8 @@ Eigen::Vector2d go::Surface::pixelToScreen(int x, int y)
 
 Eigen::Vector2d go::Surface::pixelToScreenMultiSample(int x, int y)
 {
-    double sx = (x + random_double(-0.5, +0.5)) / double(m_width);
-    double sy = (y + random_double(-0.5, +0.5)) / double(m_height);
+    double sx = (x + random_double(-0.9, +0.9)) / double(m_width);
+    double sy = (y + random_double(-0.9, +0.9)) / double(m_height);
     return Eigen::Vector2d(sx * 2.0 - 1.0, sy * 2.0 - 1.0);
 }
 
