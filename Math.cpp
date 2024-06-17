@@ -64,23 +64,27 @@ Vector4d gamma(Vector4d &v, double gamma)
     return Vector4d(std::pow(v.x(), gamma), std::pow(v.y(), gamma), std::pow(v.z(), gamma), std::pow(v.w(), gamma));
 }
 
-double crossProductZ(const Vector3d &a, const Vector3d &b, const Vector3d &c)
+Matrix4d translate(Vector3d translate)
 {
-    return (b.x() - a.x()) * (c.z() - a.z()) - (b.z() - a.z()) * (c.x() - a.x());
+    Matrix4d m;
+    Vector4d o = translate.homogeneous();
+    o[3] = 1;
+    m << Vector4d(1,0,0,0),Vector4d(0,1,0,0),Vector4d(0,0,1,0),o;
+    // m = m.transpose().eval();
+    return m;
 }
-Vector2d interpolateUV(const Vector3d &p, const Vector3d &v1, const Vector3d &v2, const Vector3d &v3,
+
+Vector2d interpolateUV(const Vector3d &p, const Vector3d &a, const Vector3d &b, const Vector3d &c,
                        const Vector2d &uv1, const Vector2d &uv2, const Vector2d &uv3)
 {
-    // 判断点P是否在以v1v2为底的三角形内
-    double s = crossProductZ(p, v1, v2) / crossProductZ(v3, v1, v2);
-    // 判断点P是否在以v2v3为底的三角形内
-    double t = crossProductZ(p, v2, v3) / crossProductZ(v1, v2, v3);
-
-    // 确保s和t都在[0, 1]之间，即点P确实在三角形内部
-    Vector2d uv;
-    uv[0] = uv1.x() * (1 - s) * (1 - t) + uv2.x() * s * (1 - t) + uv3.x() * t;
-    uv[1] = uv1.y() * (1 - s) * (1 - t) + uv2.y() * s * (1 - t) + uv3.y() * t;
-    return uv;
+    double at = -(p.x() - b.x()) * (c.y() - b.y()) + (p.y() - b.y()) * (c.x() - b.x());
+    double ab = -(a.x() - b.x()) * (c.y() - b.y()) + (a.y() - b.y()) * (c.x() - b.x());
+    double bt = -(p.x() - c.x()) * (a.y() - c.y()) + (p.y() - c.y()) * (a.x() - c.x());
+    double bb = -(b.x() - c.x()) * (a.y() - c.y()) + (b.y() - c.y()) * (a.x() - c.x());
+    double alpha = at / ab;
+    double beta = bt / bb;
+    double gama = 1 - alpha - beta;
+    return uv1 * alpha + uv2 * beta + uv3 * gama;
 }
 
 go::Interval::Interval(double min, double max) : m_min(min), m_max(max)

@@ -45,8 +45,6 @@ namespace go
     public:
         Triangle();
         Triangle(Vertex point1, Vertex point2, Vertex point3, std::shared_ptr<Material>);
-        Triangle(Vector3d &&point1, Vector3d &&point2, Vector3d &&point3, std::shared_ptr<Material>);
-        Triangle(Vector3d &point1, Vector3d &point2, Vector3d &point3, std::shared_ptr<Material>);
         virtual bool hit(Ray &ray, Interval ray_t, HitResult &result);
         virtual void uv(Vector2d &uv, const Vector3d &point);
         bool contain(const Vector3d &p);

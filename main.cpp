@@ -4,11 +4,11 @@
 #include "Render.hpp"
 #include <iostream>
 
-#define WIDTH  800
-#define HEIGHT 600
+#define WIDTH  400
+#define HEIGHT 300
 
 #define RATIO (double(WIDTH) / HEIGHT)
-#define SAMPLES  100
+#define SAMPLES  1
 
 
 // void scene1(){
@@ -44,13 +44,15 @@ int main(int, char **)
     auto db = std::make_shared<go::Lambertian>(new go::TestColor());
 
     auto light1 = std::make_shared<go::Light>(Vector3d(5,5,5));
+
+    auto n = std::make_shared<go::NormalColor>();
     
-    go::Camera c(Eigen::Vector3d(2, 3, 3.5), Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0.3, 0),pi / 4, RATIO,4.9,0 * pi / 100);
+    go::Camera c(Eigen::Vector3d(0, 0, 3.5), Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0.3, 0),pi / 4, RATIO,4.9,0 * pi / 100);
     
 
-    Vector4d ambient = Vector4d(0.1,0.1,0.1,1);
+    Vector4d ambient = Vector4d(1,1,1,1);
 
-    go::Scene sc(1000,ambient);
+    go::Scene sc(100,ambient);
 
     go::Sphere* sq = new go::Sphere(Vector3d(-1.5, 0, -2.5), 0.5,l1);
 
@@ -70,13 +72,15 @@ int main(int, char **)
         go::Vertex( 1., 1.,-1.,1.,0),
         go::Vertex(-1., 1.,-1.,0,0),
         go::Vertex(-1.,-1.,-1.,0,1.),
-        db
+        l2
     );
+    
     go::Quad* qua = new go::Quad(
         go::Vertex( 1, 1,-1,1,0),
         go::Vertex(-1, 1,-1,0,0),
         go::Vertex(-1,-1,-1,0,1),
         go::Vertex( 1,-1,-1,1,1),l2);
+    qua->transform(translate(Vector3d(0,-1,-1)));
 
     // go::Quad* qua1 = new go::Quad(Vector3d(-1,1,-1),Vector3d(-1,1,1),Vector3d(-1,-1,1),db);
 
@@ -95,15 +99,16 @@ int main(int, char **)
 
     go::Sphere* qsq2 = new go::Sphere(Vector3d(0.5, -0.78,0.5), 0.2,d1);
 
-    sc.add(sqlt);
+    // sc.add(sqlt);
     // sc.add(tra);
     // sc.add(sq5);
-    sc.add(sq2);
-    sc.add(sq);
-    sc.add(sq3);
-    sc.add(sq4);
-    sc.add(pla);
+    // sc.add(sq2);
+    // sc.add(sq);
+    // sc.add(sq3);
+    // sc.add(sq4);
+    // sc.add(pla);
     // sc.add(tri);
+    sc.add(qua);
     // sc.add(qua2);
     // sc.add(qua1);
     // sc.add(qua3);

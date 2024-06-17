@@ -1,4 +1,5 @@
 #include "Raytracing.hpp"
+#include "Texture.hpp"
 
 go::Color::Color(Vector3d &albedo) : m_albedo(albedo)
 {
@@ -97,4 +98,8 @@ void go::Pixel::assign(uint8_t *buffer, uint32_t size)
     size_t copys = std::min(size, m_h * m_p * m_w);
 
     memcpy(m_pixels, buffer, copys);
+}
+bool &go::Pixel::linear()
+{
+    return is_linear;
 }

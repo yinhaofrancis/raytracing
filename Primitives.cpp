@@ -152,9 +152,11 @@ void go::Triangle::transform(const Matrix4d& transform)
 {
     for (size_t i = 0; i < 3; i++)
     {
-        m_point[i].point = (transform * (m_point[i].point.homogeneous())).head<3>();
+        Vector4d temp = (transform * (m_point[i].point.homogeneous()));
+        m_point[i].point << temp.head<3>();
     }
-    m_normal = (transform * (m_normal.homogeneous())).head<3>();
+    Matrix4d norm = transform.inverse().transpose();
+    m_normal << (norm * (m_normal.homogeneous())).head<3>();
 }
 
 bool go::Triangle::same_size(const Vector3d &point0, const Vector3d &point1, const Vector3d &point2, const Vector3d &p)

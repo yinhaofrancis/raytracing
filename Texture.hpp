@@ -35,13 +35,13 @@ namespace go
         Vector3d color(Vector2d uv, Vector3d &point);
         Vector3d operator()(Vector2i uv);
         void assign(uint8_t *buffer, uint32_t size);
-
+        bool& linear();
     private:
         uint8_t *m_pixels = nullptr;
         uint32_t m_w;
         uint32_t m_h;
         uint32_t m_p = 3;
-        bool is_linear = true;
+        bool is_linear = false;
     };
 
     class TestColor : public Texture
