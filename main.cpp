@@ -47,7 +47,7 @@ int main(int, char **)
 
     auto n = std::make_shared<go::NormalColor>();
     
-    go::Camera c(Eigen::Vector3d(2, 0.5, 2), Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0.3, 0),pi / 4, RATIO,4.9,0 * pi / 100);
+    go::Camera c(Eigen::Vector3d(3, 0.5, 3), Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0.3, 0),pi / 4, RATIO,4.9,0 * pi / 100);
     
 
     Vector4d ambient = Vector4d(1,1,1,1);
