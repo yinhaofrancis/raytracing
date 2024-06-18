@@ -8,7 +8,7 @@
 #define HEIGHT 300
 
 #define RATIO (double(WIDTH) / HEIGHT)
-#define SAMPLES  100
+#define SAMPLES  10
 
 
 // void scene1(){
@@ -47,7 +47,7 @@ int main(int, char **)
 
     auto n = std::make_shared<go::NormalColor>();
     
-    go::Camera c(Eigen::Vector3d(2, 2, 3.5), Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0.3, 0),pi / 4, RATIO,4.9,0 * pi / 100);
+    go::Camera c(Eigen::Vector3d(0, 0, 7), Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0.3, 0),pi / 4, RATIO,4.9,0 * pi / 100);
     
 
     Vector4d ambient = Vector4d(1,1,1,1);
@@ -79,10 +79,10 @@ int main(int, char **)
         go::Vertex( 1, 1,-1,1,0),
         go::Vertex(-1, 1,-1,0,0),
         go::Vertex(-1,-1,-1,0,1),
-        go::Vertex( 1,-1,-1,1,1),l2);
+        go::Vertex( 1,-1,-1,1,1),m1);
 
     
-    qua->transform(rotate(Vector4d(0,0,1,M_PI_2)));
+    qua->transform(rotate(Vector4d(1,0,0,M_PI / 8)));
 
 
     // go::Quad* qua1 = new go::Quad(Vector3d(-1,1,-1),Vector3d(-1,1,1),Vector3d(-1,-1,1),db);
@@ -95,13 +95,7 @@ int main(int, char **)
 
     // go::Quad* qua5 = new go::Quad(Vector3d(0.6,0.99,0.6),Vector3d(-0.6,0.99,0.6),Vector3d(-0.6,0.99,-0.6),light1);
 
-
-    go::Sphere* qsq = new go::Sphere(Vector3d(-0.5, -0.8, 0), 0.2,l2);
-
-    go::Sphere* qsq1 = new go::Sphere(Vector3d(0.0, -0.8, 0.5), 0.2,m1);
-
-    go::Sphere* qsq2 = new go::Sphere(Vector3d(0.5, -0.78,0.5), 0.2,d1);
-
+    auto box = new go::Box(l1);
     // sc.add(sqlt);
     // sc.add(tra);
     // sc.add(sq5);
@@ -109,9 +103,10 @@ int main(int, char **)
     // sc.add(sq);
     // sc.add(sq3);
     // sc.add(sq4);
-    // sc.add(pla);
+    sc.add(pla);
     // sc.add(tri);
     sc.add(qua);
+    // sc.add(box);
     // sc.add(qua2);
     // sc.add(qua1);
     // sc.add(qua3);

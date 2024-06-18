@@ -103,7 +103,7 @@ void go::Planer::uv(Vector2d &uv, const Vector3d &point)
 
 bool go::Triangle::hit(Ray &ray, Interval ray_t, HitResult &result)
 {
-    if (ray.direction().dot(m_normal) >= 0)
+    if (ray.direction().dot(m_normal) >= 0 && is_double_face == false)
     {
         return false;
     }
@@ -123,7 +123,7 @@ bool go::Triangle::hit(Ray &ray, Interval ray_t, HitResult &result)
     result.hit = ray.exec(t);
     result.normal = m_normal;
     result.mat = m_mat;
-    result.isFront = true;
+    result.isFront = A <= 0;
     this->uv(result.uv, result.hit);
     return true;
 }
@@ -156,7 +156,13 @@ void go::Triangle::transform(const Matrix4d& transform)
         m_point[i].point << temp.head<3>();
     }
     Matrix4d norm = transform.inverse().transpose();
-    m_normal << (norm * (m_normal.homogeneous())).head<3>();
+    Vector4d temp = norm * m_normal.homogeneous();
+    m_normal = temp.head<3>().normalized();
+}
+
+bool &go::Triangle::double_face()
+{
+    return is_double_face;
 }
 
 bool go::Triangle::same_size(const Vector3d &point0, const Vector3d &point1, const Vector3d &point2, const Vector3d &p)
@@ -192,13 +198,26 @@ go::Quad::Quad(Vertex point1, Vertex point2, Vertex point3, Vertex point4, std::
 
 bool go::Quad::hit(Ray &ray, Interval ray_t, HitResult &result)
 {
-    if (m_triangles[0].hit(ray,ray_t,result)){
+    for (size_t i = 0; i < 2; i++)
+    {
+        m_triangles[i].double_face() = is_double_face;
+    }
+    HitResult ret1,ret2;
+    bool t1 = m_triangles[0].hit(ray,ray_t,ret1);
+    bool t2 = m_triangles[1].hit(ray,ray_t,ret2);
+    if(!t1 && !t2 ){
+        return false;
+    }
+    if(t1 && t2){
+        result = ret1.t > ret2.t ? ret2 : ret1;
+        return true;
+    }else if(t2){
+        result = ret2;
+        return true;
+    }else{
+        result = ret1;
         return true;
     }
-    if (m_triangles[1].hit(ray,ray_t,result)){
-        return true;
-    }
-    return false;
 }
 
 void go::Quad::uv(Vector2d &uv, const Vector3d &point)
@@ -220,22 +239,68 @@ void go::Quad::transform(const Matrix4d &transform)
     
 }
 
-go::Box::Box(Vector3d &&point, Vector2d &&size, std::shared_ptr<Material>)
+bool &go::Quad::double_face()
 {
-    for (size_t i = 0; i < 6; i++)
+    return is_double_face;
+}
+
+go::Box::Box(std::shared_ptr<Material> m)
+{
+    Vector4d v[5] = {
+        Vector4d(0,1,0,pi / 2),
+        Vector4d(0,1,0,pi / -2),
+        Vector4d(0,1,0,pi),
+        Vector4d(1,0,0,pi / 2),
+        Vector4d(1,0,0,pi / -2)
+    };
+    go::Quad q(
+            go::Vertex( 1, 1,1,1,0),
+            go::Vertex(-1, 1,1,0,0),
+            go::Vertex(-1,-1,1,0,1),
+            go::Vertex( 1,-1,1,1,1),m);
+    m_quad[0] = q;
+    q.double_face() = true;
+    for (size_t i = 0; i < 5; i++)
     {
-        /* code */
+        go::Quad q(
+            go::Vertex( 1, 1,1,1,0),
+            go::Vertex(-1, 1,1,0,0),
+            go::Vertex(-1,-1,1,0,1),
+            go::Vertex( 1,-1,1,1,1),m);
+        q.double_face() = true;
+        m_quad[i + 1] = q;
+        q.transform(rotate(v[i]));
     }
     
 }
 
 bool go::Box::hit(Ray &ray, Interval ray_t, HitResult &result)
 {
-    return false;
+    HitResult ret;
+    bool has_hit = false;
+    ret.t = infinity;
+    for (size_t i = 0; i < 6; i++)
+    {
+        Ray tray = ray;
+        HitResult r;
+        if (!m_quad[i].hit(tray,ray_t,r)){
+            continue;
+        }
+        has_hit = true;
+        if(r.t < ret.t){
+            ret = r;
+        }
+    }
+    if(!has_hit){
+        return false;
+    }
+    result = ret;
+    return true;
 }
 
 void go::Box::uv(Vector2d &uv, const Vector3d &point)
 {
+
 }
 
 void go::Box::transform(const Matrix4d &transform)

@@ -49,10 +49,12 @@ namespace go
         virtual void uv(Vector2d &uv, const Vector3d &point);
         bool contain(const Vector3d &p);
         void transform(const Matrix4d& transform);
+        bool& double_face();
     private:
         bool same_size(const Vector3d &point1, const Vector3d &point2, const Vector3d &point3, const Vector3d &p);
         std::shared_ptr<Material> m_mat;
         Vertex m_point[3];
+        bool is_double_face = false;
         Vector3d m_normal;
     };
     class Quad : public Hitable
@@ -63,14 +65,17 @@ namespace go
         virtual bool hit(Ray &ray, Interval ray_t, HitResult &result);
         virtual void uv(Vector2d &uv, const Vector3d &point);
         void transform(const Matrix4d& transform);
+        bool& double_face();
     private:
         Triangle m_triangles[2];
+        
+        bool is_double_face = false;
     };
 
     class Box : public Hitable
     {
     public:
-        Box(Vector3d &&point, Vector2d &&size, std::shared_ptr<Material>);
+        Box(std::shared_ptr<Material>);
         virtual bool hit(Ray &ray, Interval ray_t, HitResult &result);
         virtual void uv(Vector2d &uv, const Vector3d &point);
         void transform(const Matrix4d&  transform);
