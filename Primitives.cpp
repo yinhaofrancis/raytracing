@@ -1,4 +1,5 @@
 #include "Primitives.hpp"
+#include <iostream>
 
 go::Sphere::Sphere(Vector3d center, double radius, std::shared_ptr<Material> mat) : m_center(center), m_radius(radius), m_mat(mat), m_center2(center)
 {
@@ -110,7 +111,7 @@ bool go::Triangle::hit(Ray &ray, Interval ray_t, HitResult &result)
     double A = m_normal.dot(ray.direction());
     double B = (m_point[0].point - ray.location()).dot(m_normal);
     double t = B / A;
-    if(t <= 0.001){
+    if(!ray_t.contains(t)){
         return false;
     }
     Vector3d hit = ray.exec(t);
@@ -173,7 +174,7 @@ bool go::Triangle::same_size(const Vector3d &point0, const Vector3d &point1, con
     Vector3d v1 = ab.cross(ac);
     Vector3d v2 = ab.cross(ap);
 
-    return v1.dot(v2) >= 0 && v1.normalized().dot(v2.normalized()) == 1;
+    return v1.dot(v2) >= 0 && v1.normalized().dot(v2.normalized()) > 0.99 ;
 }
 
 go::Triangle::Triangle()

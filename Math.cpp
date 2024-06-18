@@ -75,7 +75,8 @@ Matrix4d translate(Vector3d translate)
 
 Matrix4d rotate(Vector4d r)
 {
-    Eigen::Quaterniond m(r.w(),r.x(),r.y(),r.z());
+    AngleAxisd ax(r.w(),Vector3d(r.x(),r.y(),r.z()).normalized());
+    Eigen::Quaterniond m(ax);
     m.normalize();
     Matrix4d m4 = Matrix4d::Identity();
     m4.block<3,3>(0,0) = m.toRotationMatrix();
