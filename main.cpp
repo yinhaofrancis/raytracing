@@ -47,7 +47,7 @@ int main(int, char **)
 
     auto n = std::make_shared<go::NormalColor>();
     
-    go::Camera c(Eigen::Vector3d(1, 1, 3), Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0.3, 0),pi / 4, RATIO,4.9,0 * pi / 100);
+    go::Camera c(Eigen::Vector3d(2, 0.5, 2), Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0.3, 0),pi / 4, RATIO,4.9,0 * pi / 100);
     
 
     Vector4d ambient = Vector4d(1,1,1,1);
@@ -66,7 +66,7 @@ int main(int, char **)
 
      go::Sphere* sq3 = new go::Sphere(Vector3d(-1.1, 0,0.), 0.5,d1);
 
-    go::Planer* pla = new go::Planer(Vector3d(0,-2,0),Vector3d(0,1,0),l3);
+    go::Planer* pla = new go::Planer(Vector3d(0,-1,0),Vector3d(0,1,0),l3);
 
     go::Triangle* tri = new go::Triangle(
         go::Vertex( 1., 1.,-1.,1.,0),
@@ -76,13 +76,13 @@ int main(int, char **)
     );
     
     go::Quad* qua = new go::Quad(
-        go::Vertex( 1, 1,-1,1,0),
-        go::Vertex(-1, 1,-1,0,0),
-        go::Vertex(-1,-1,-1,0,1),
-        go::Vertex( 1,-1,-1,1,1),l2);
+        go::Vertex( 1, 1,0,1,0),
+        go::Vertex(-1, 1,0,0,0),
+        go::Vertex(-1,-1,0,0,1),
+        go::Vertex( 1,-1,0,1,1),m1);
 
     
-    qua->transform(rotate(Vector4d(1,0,0,-M_PI / 3)));
+    qua->transform(rotate(Vector4d(1,0,0,M_PI / 6)));
     // qua->transform(translate(Vector3d(1,1,1)));
     // qua->transform(scale(Vector3d(2,2,1)));
 
@@ -97,7 +97,8 @@ int main(int, char **)
 
     // go::Quad* qua5 = new go::Quad(Vector3d(0.6,0.99,0.6),Vector3d(-0.6,0.99,0.6),Vector3d(-0.6,0.99,-0.6),light1);
 
-    auto box = new go::Box(l1);
+    auto box = new go::Box(d1);
+    box->transform(rotate(Vector4d(0,1,0,M_PI_4)));
     // sc.add(sqlt);
     // sc.add(tra);
     // sc.add(sq5);
@@ -107,8 +108,8 @@ int main(int, char **)
     // sc.add(sq4);
     sc.add(pla);
     // sc.add(tri);
-    sc.add(qua);
-    // sc.add(box);
+    // sc.add(qua);
+    sc.add(box);
     // sc.add(qua2);
     // sc.add(qua1);
     // sc.add(qua3);

@@ -113,7 +113,7 @@ go::Interval::Interval() : Interval(+infinity, -infinity)
 
 go::Interval go::Interval::max(double max)
 {
-    return Interval(0.000001, max);
+    return Interval(0.001, max);
 }
 
 double go::Interval::size() const

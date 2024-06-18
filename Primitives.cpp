@@ -259,8 +259,9 @@ go::Box::Box(std::shared_ptr<Material> m)
             go::Vertex(-1, 1,1,0,0),
             go::Vertex(-1,-1,1,0,1),
             go::Vertex( 1,-1,1,1,1),m);
-    m_quad[0] = q;
     q.double_face() = true;
+    m_quad[0] = q;
+    
     for (size_t i = 0; i < 5; i++)
     {
         go::Quad q(
@@ -269,8 +270,8 @@ go::Box::Box(std::shared_ptr<Material> m)
             go::Vertex(-1,-1,1,0,1),
             go::Vertex( 1,-1,1,1,1),m);
         q.double_face() = true;
-        m_quad[i + 1] = q;
         q.transform(rotate(v[i]));
+        m_quad[i + 1] = q;
     }
     
 }
