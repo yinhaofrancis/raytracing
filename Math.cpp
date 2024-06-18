@@ -70,8 +70,23 @@ Matrix4d translate(Vector3d translate)
     Vector4d o = translate.homogeneous();
     o[3] = 1;
     m << Vector4d(1,0,0,0),Vector4d(0,1,0,0),Vector4d(0,0,1,0),o;
-    // m = m.transpose().eval();
     return m;
+}
+
+Matrix4d rotate(Vector4d r)
+{
+    Eigen::Quaterniond m(r.w(),r.x(),r.y(),r.z());
+    m.normalize();
+    Matrix4d m4 = Matrix4d::Identity();
+    m4.block<3,3>(0,0) = m.toRotationMatrix();
+    return m4;
+}
+
+Matrix4d scale(Vector3d s)
+{
+    Matrix4d m4 = Matrix4d::Identity();
+    m4 << Vector4d(s.x(),0,0,0),Vector4d(0,s.y(),0,0),Vector4d(0,0,s.z(),0),Vector4d(0,0,0,1);
+    return m4;
 }
 
 Vector2d interpolateUV(const Vector3d &p, const Vector3d &a, const Vector3d &b, const Vector3d &c,

@@ -35,6 +35,10 @@ Vector4d gamma(Vector4d &v, double gamma);
 
 Matrix4d translate(Vector3d translate);
 
+Matrix4d rotate(Vector4d r);
+
+Matrix4d scale(Vector3d s);
+
 Vector2d interpolateUV(const Vector3d& p, const Vector3d& v1, const Vector3d& v2, const Vector3d& v3,const Vector2d& uv1, const Vector2d& uv2, const Vector2d& uv3);
 
 namespace go

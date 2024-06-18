@@ -8,7 +8,7 @@
 #define HEIGHT 300
 
 #define RATIO (double(WIDTH) / HEIGHT)
-#define SAMPLES  1
+#define SAMPLES  100
 
 
 // void scene1(){
@@ -47,7 +47,7 @@ int main(int, char **)
 
     auto n = std::make_shared<go::NormalColor>();
     
-    go::Camera c(Eigen::Vector3d(0, 0, 3.5), Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0.3, 0),pi / 4, RATIO,4.9,0 * pi / 100);
+    go::Camera c(Eigen::Vector3d(2, 2, 3.5), Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0.3, 0),pi / 4, RATIO,4.9,0 * pi / 100);
     
 
     Vector4d ambient = Vector4d(1,1,1,1);
@@ -80,7 +80,10 @@ int main(int, char **)
         go::Vertex(-1, 1,-1,0,0),
         go::Vertex(-1,-1,-1,0,1),
         go::Vertex( 1,-1,-1,1,1),l2);
-    qua->transform(translate(Vector3d(0,-1,-1)));
+
+    
+    qua->transform(rotate(Vector4d(0,0,1,M_PI_2)));
+
 
     // go::Quad* qua1 = new go::Quad(Vector3d(-1,1,-1),Vector3d(-1,1,1),Vector3d(-1,-1,1),db);
 
