@@ -19,7 +19,7 @@ go::Camera &go::Render::camera()
     return m_camera;
 }
 
-void go::Render::draw(int samples)
+void go::Render::draw(int samples,double gamma)
 {
 
     int max = 20;
@@ -27,13 +27,13 @@ void go::Render::draw(int samples)
     for (size_t t = 0; t < max; t++)
     {
         int index = t;
-        std::thread m([this, samples,index,max,&b](){
+        std::thread m([this, samples,index,max,&b,gamma](){
             for (size_t i = index; i < m_surface.width(); i+=max)
             {
                
                 for (size_t j = 0; j < m_surface.height(); j++)
                 {
-                    renderPixel(i,j,samples);
+                    renderPixel(i,j,samples,gamma);
                 }
                 std::cout << "col:" << i << std::endl;
             } 
@@ -47,7 +47,7 @@ void go::Render::draw(int samples)
     }
 }
 
-void go::Render::renderPixel(int x, int y, int samples)
+void go::Render::renderPixel(int x, int y, int samples,double g)
 {
     Vector4d color(0, 0, 0, 0);
     for (int k = 0; k < samples; k++)
@@ -58,5 +58,5 @@ void go::Render::renderPixel(int x, int y, int samples)
         color += tcolor;
     }
     color = color / samples;
-    m_surface.draw(gamma(color, 1.0), x, y);
+    m_surface.draw(gamma(color, g), x, y);
 }

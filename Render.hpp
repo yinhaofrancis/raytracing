@@ -15,9 +15,9 @@ public:
     ~Render();
     Scene&   scene();
     Camera&  camera();
-    void     draw(int);
+    void     draw(int,double);
 private:
-    void renderPixel(int x,int y,int samples);
+    void renderPixel(int x,int y,int samples,double gamma);
     Surface  m_surface;
     Scene   m_scene;
     Camera  m_camera;

@@ -4,8 +4,8 @@
 #include "Render.hpp"
 #include <iostream>
 // #include <immintrin.h>
-#define WIDTH  400
-#define HEIGHT 300
+#define WIDTH  800
+#define HEIGHT 600
 
 #define RATIO (double(WIDTH) / HEIGHT)
 #define SAMPLES  80
@@ -43,14 +43,14 @@ int main(int, char **)
 
     auto db = std::make_shared<go::Lambertian>(new go::TestColor());
 
-    auto light1 = std::make_shared<go::Light>(Vector3d(1,1,1));
+    auto light1 = std::make_shared<go::Light>(Vector3d(7,7,7));
 
     auto n = std::make_shared<go::NormalColor>();
     
-    go::Camera c(Eigen::Vector3d(0,0,4), Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0.3, 0),pi / 4, RATIO,4.9,0 * pi / 100);
+    go::Camera c(Eigen::Vector3d(1,1,4), Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0.3, 0),pi / 4, RATIO,4.8,2 * pi / 100);
     
 
-    Vector4d ambient = Vector4d(0,0,0,0);
+    Vector4d ambient = Vector4d(0.1,0.1,0.1,1);
 
     go::Scene sc(100,ambient);
 
@@ -96,8 +96,8 @@ int main(int, char **)
     // go::Quad* qua4 = new go::Quad(Vector3d(1,1,1),Vector3d(-1,1,1),Vector3d(-1,1,-1),db);
 
     go::Quad* qua5 = new go::Quad(light1);
-    qua5->transform(translate(0,4,0));
-    qua5->transform(scale(10,1,10));
+    qua5->transform(translate(-2,4,-1));
+    qua5->transform(scale(1,1,1));
     qua5->double_face() = true;
 
 
@@ -115,7 +115,7 @@ int main(int, char **)
     sc.add(pla);
     // sc.add(tri);
     // sc.add(qua);
-    sc.add(box);
+    // sc.add(box);
     // sc.add(qua2);
     // sc.add(qua1);
     // sc.add(qua3);
@@ -130,7 +130,7 @@ int main(int, char **)
     
     
 
-    render.draw(SAMPLES);
+    render.draw(SAMPLES,1);
     // sf.smooth();
     sf.ppm("m.ppm");
     s.showWindow(sf);
