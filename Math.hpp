@@ -29,6 +29,8 @@ Vector3d random_in_unit_semisphere(Vector3d &normal);
 
 Vector3d random_in_unit_disk();
 
+Vector2d random_in_square(int sampleIndex,int sample);
+
 const int max_depth = 20;
 
 Vector4d gamma(Vector4d &v, double gamma);

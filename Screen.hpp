@@ -26,7 +26,7 @@ namespace go
 
         Eigen::Vector2d pixelToScreen(int x,int y);
 
-        Eigen::Vector2d pixelToScreenMultiSample(int x,int y);
+        Eigen::Vector2d pixelToScreenMultiSample(int x, int y,int i,int sample);
 
         friend class Screen;
 

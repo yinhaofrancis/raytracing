@@ -45,6 +45,15 @@ Vector3d random_in_unit_disk()
     return v;
 }
 
+Vector2d random_in_square(int i, int sample)
+{
+    double w = sqrt(sample);
+    double y = i / w + random_double(-0.5,0.5);
+    double x = fmod(i,w) + random_double(-0.5,0.5);
+    Vector2d r(x,y);
+    return r / w;
+}
+
 Vector3d reflect(Vector3d &incident, Vector3d &normal)
 {
     return incident - 2 * incident.dot(normal) * normal;

@@ -52,7 +52,7 @@ void go::Render::renderPixel(int x, int y, int samples,double g)
     Vector4d color(0, 0, 0, 0);
     for (int k = 0; k < samples; k++)
     {
-        auto a = m_surface.pixelToScreenMultiSample(x, y);
+        auto a = m_surface.pixelToScreenMultiSample(x, y,k,samples);
         auto ray = m_camera.createRay(a);
         Vector4d tcolor = m_scene.hit(ray);
         color += tcolor;
