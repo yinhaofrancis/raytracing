@@ -64,18 +64,19 @@ Vector4d gamma(Vector4d &v, double gamma)
     return Vector4d(std::pow(v.x(), gamma), std::pow(v.y(), gamma), std::pow(v.z(), gamma), std::pow(v.w(), gamma));
 }
 
-Matrix4d translate(Vector3d translate)
+Matrix4d translate(double x,double y,double z)
 {
     Matrix4d m;
-    Vector4d o = translate.homogeneous();
-    o[3] = 1;
-    m << Vector4d(1,0,0,0),Vector4d(0,1,0,0),Vector4d(0,0,1,0),o;
+    m << 1,0,0,x,
+         0,1,0,y,
+         0,0,1,z,
+         0,0,0,1;
     return m;
 }
 
-Matrix4d rotate(Vector4d r)
+Matrix4d rotate(double x,double y,double z,double angle)
 {
-    AngleAxisd ax(r.w(),Vector3d(r.x(),r.y(),r.z()).normalized());
+    AngleAxisd ax(angle,Vector3d(x,y,z).normalized());
     Eigen::Quaterniond m(ax);
     m.normalize();
     Matrix4d m4 = Matrix4d::Identity();
@@ -83,10 +84,13 @@ Matrix4d rotate(Vector4d r)
     return m4;
 }
 
-Matrix4d scale(Vector3d s)
+Matrix4d scale(double x,double y,double z)
 {
-    Matrix4d m4 = Matrix4d::Identity();
-    m4 << Vector4d(s.x(),0,0,0),Vector4d(0,s.y(),0,0),Vector4d(0,0,s.z(),0),Vector4d(0,0,0,1);
+    Matrix4d m4;
+    m4 << x,0,0,0,
+          0,y,0,0,
+          0,0,z,0,
+          0,0,0,1;
     return m4;
 }
 
@@ -113,7 +117,7 @@ go::Interval::Interval() : Interval(+infinity, -infinity)
 
 go::Interval go::Interval::max(double max)
 {
-    return Interval(0.001, max);
+    return Interval(0.00001, max);
 }
 
 double go::Interval::size() const

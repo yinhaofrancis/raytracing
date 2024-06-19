@@ -60,7 +60,9 @@ namespace go
     class Quad : public Hitable
     {
     public:
+    
         Quad() {}
+        Quad(std::shared_ptr<Material> m);
         Quad(Vertex point1, Vertex point2, Vertex point3, Vertex point4, std::shared_ptr<Material>);
         virtual bool hit(Ray &ray, Interval ray_t, HitResult &result);
         virtual void uv(Vector2d &uv, const Vector3d &point);

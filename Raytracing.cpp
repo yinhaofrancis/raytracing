@@ -277,7 +277,6 @@ bool go::NormalColor::scatter(const Ray &in, Vector4d &color, HitResult &hit, Ra
     out = in;
     out.lambertian(hit.normal, hit.hit);
     Vector4d m = hit.uv.homogeneous().homogeneous();
-    std::cout << "|"<< m.x() << "|"<< m.y() << "|" << std::endl;
     m[3] = 1;
     color = m;
     

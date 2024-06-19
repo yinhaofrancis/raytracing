@@ -190,6 +190,16 @@ go::Triangle::Triangle(go::Vertex point1, go::Vertex point2, go::Vertex point3, 
     m_normal.normalize();
 }
 
+go::Quad::Quad(std::shared_ptr<Material> m)
+{
+    Vertex v0( 1,0,-1,1,0);
+    Vertex v1(-1,0,-1,0,0);
+    Vertex v2(-1,0, 1,0,1);
+    Vertex v3( 1,0, 1,1,1);
+
+    m_triangles[0] = go::Triangle(v0,v1,v2,m);
+    m_triangles[1] = go::Triangle(v0,v2,v3,m);
+}
 
 go::Quad::Quad(Vertex point1, Vertex point2, Vertex point3, Vertex point4, std::shared_ptr<Material> m)
 {
@@ -270,7 +280,7 @@ go::Box::Box(std::shared_ptr<Material> m)
             go::Vertex(-1,-1,1,0,1),
             go::Vertex( 1,-1,1,1,1),m);
         q.double_face() = true;
-        q.transform(rotate(v[i]));
+        q.transform(rotate(v[i].x(),v[i].y(),v[i].z(),v[i].w()));
         m_quad[i + 1] = q;
     }
     
@@ -288,9 +298,10 @@ bool go::Box::hit(Ray &ray, Interval ray_t, HitResult &result)
         if (!m_quad[i].hit(tray,ray_t,r)){
             continue;
         }
-        has_hit = true;
-        if(r.t < ret.t){
+        
+        if(r.t < ret.t && ray_t.contains(r.t)){
             ret = r;
+            has_hit = true;
         }
     }
     if(!has_hit){
