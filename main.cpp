@@ -8,7 +8,7 @@
 #define HEIGHT 300
 
 #define RATIO (double(WIDTH) / HEIGHT)
-#define SAMPLES  10
+#define SAMPLES  100
 
 
 // void scene1(){
@@ -98,7 +98,7 @@ int main(int, char **)
     // go::Quad* qua5 = new go::Quad(Vector3d(0.6,0.99,0.6),Vector3d(-0.6,0.99,0.6),Vector3d(-0.6,0.99,-0.6),light1);
 
     auto box = new go::Box(d1);
-    box->transform(rotate(Vector4d(0,1,0,M_PI_4)));
+    box->transform(translate(Vector3d(0,1,0)));
     // sc.add(sqlt);
     // sc.add(tra);
     // sc.add(sq5);
