@@ -36,7 +36,7 @@ Vector3d random_in_unit_semisphere(Vector3d &normal)
 Vector3d random_in_unit_disk()
 {
 
-    Vector3d v(random_double(-1, 1), random_double(1, 1), 0);
+    Vector3d v(random_double(-1, 1), random_double(-1, 1), 0);
     if (v.size() > 1)
     {
         v.normalize();
