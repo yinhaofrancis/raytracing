@@ -29,19 +29,19 @@ Vector3d random_in_unit_semisphere(Vector3d &normal);
 
 Vector3d random_in_unit_disk();
 
-Vector2d random_in_square(int sampleIndex,int sample);
+Vector2d random_in_square(int sampleIndex, int sample);
 
-const int max_depth = 20;
+const int max_depth = 8;
 
 Vector4d gamma(Vector4d &v, double gamma);
 
-Matrix4d translate(double x,double y,double z);
+Matrix4d translate(double x, double y, double z);
 
-Matrix4d rotate(double x,double y,double z,double angle);
+Matrix4d rotate(double x, double y, double z, double angle);
 
-Matrix4d scale(double x,double y,double z);
+Matrix4d scale(double x, double y, double z);
 
-Vector2d interpolateUV(const Vector3d& p, const Vector3d& v1, const Vector3d& v2, const Vector3d& v3,const Vector2d& uv1, const Vector2d& uv2, const Vector2d& uv3);
+Vector2d interpolateUV(const Vector3d &p, const Vector3d &v1, const Vector3d &v2, const Vector3d &v3, const Vector2d &uv1, const Vector2d &uv2, const Vector2d &uv3);
 
 namespace go
 {
@@ -59,5 +59,14 @@ namespace go
     private:
         double m_min;
         double m_max;
+    };
+
+    class Random
+    {
+    public:
+        Random(const Vector3d &w);
+        Vector3d cosine_direction();
+    private:
+        Matrix3d m_mat;
     };
 } // namespace go

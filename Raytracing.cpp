@@ -47,7 +47,8 @@ void go::Ray::fullRandom(Vector3d hitPoint)
 }
 void go::Ray::lambertian(Vector3d normal, Vector3d hitPoint)
 {
-    m_direction = random_in_unit_sphere() + normal;
+    
+    m_direction = Random(normal).cosine_direction();
     if (m_direction.dot(m_direction) < epsilon)
     {
         m_direction = normal;
@@ -168,13 +169,15 @@ Vector4d go::Scene::hit(Ray &ray)
             Vector4d color;
             auto em = result.mat->emitted(result);
             auto m = result.mat->scatter(ray, color, result, next);
+            auto scatter_pdf = result.mat->scatter_pdf(ray,result,next);
             Vector4d c;
             c << em,1.0;
             if(!m){
                 return c;
             }
             auto nextColor = hit(next);
-            return c + color.cwiseProduct(nextColor);
+            auto pdf = 1 / (2 * pi);
+            return c + (color*scatter_pdf).cwiseProduct(nextColor) / pdf;
         }
         return m_ambient;
     }
@@ -192,6 +195,11 @@ Vector3d go::Material::emitted(HitResult &hit)
     return Vector3d(0,0,0);
 }
 
+double go::Material::scatter_pdf(const Ray &in, const HitResult &hit, const Ray &out)
+{
+    return 1.0;
+}
+
 go::Lambertian::Lambertian(Vector3d albedo) : m_texture(std::make_shared<Color>(albedo))
 {
 }
@@ -207,6 +215,11 @@ bool go::Lambertian::scatter(const Ray &in, Vector4d &color, HitResult &hit, Ray
     color << tColor, 1.0;
     out.lambertian(hit.normal, hit.hit);
     return true;
+}
+
+double go::Lambertian::scatter_pdf(const Ray &in, const HitResult &hit, const Ray &out)
+{
+    return 1 / (2 * pi);
 }
 
 go::Metal::Metal(Vector3d albedo, double fuzz) : m_texture(std::make_shared<Color>(albedo)), m_fuzz(fuzz)
@@ -265,6 +278,9 @@ go::Light::Light(Vector3d light):m_light(light)
 
 Vector3d go::Light::emitted(HitResult &hit)
 {
+    if(!hit.isFront){
+        return Vector3d(0,0,0);
+    }
     return m_light;
 }
 
@@ -299,4 +315,9 @@ bool go::isotropic::scatter(const Ray &in, Vector4d &color, HitResult &hit, Ray 
     color[3] = 1;
     out.fullRandom(hit.hit);
     return true;
+}
+
+double go::isotropic::scatter_pdf(const Ray &in, const HitResult &hit, const Ray &out)
+{
+    return 1 / (4 * pi);
 }

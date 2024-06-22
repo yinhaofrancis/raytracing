@@ -311,10 +311,6 @@ bool go::Box::hit(Ray &ray, Interval ray_t, HitResult &result)
     return true;
 }
 
-void go::Box::uv(Vector2d &uv, const Vector3d &point)
-{
-
-}
 
 void go::Box::transform(const Matrix4d &transform)
 {
@@ -327,4 +323,68 @@ void go::Box::transform(const Matrix4d &transform)
 go::Vertex::Vertex(double x, double y, double z, double u, double v):point(x,y,z),uv(u,v)
 {
 
+}
+
+go::Room::Room(std::shared_ptr<Material> m)
+{
+    Vector4d v[4] = {
+        Vector4d(0,1,0,pi / 2),
+        Vector4d(0,1,0,pi / -2),
+        Vector4d(1,0,0,pi / -2),
+        Vector4d(1,0,0,pi / 2)
+    };
+    go::Quad q(
+            go::Vertex( 1, 1,-1,1,0),
+            go::Vertex(-1, 1,-1,0,0),
+            go::Vertex(-1,-1,-1,0,1),
+            go::Vertex( 1,-1,-1,1,1),m);
+    q.double_face() = false;
+    m_quad[0] = q;
+    
+    for (size_t i = 0; i < 4; i++)
+    {
+        go::Quad q(
+            go::Vertex( 1, 1,-1,1,0),
+            go::Vertex(-1, 1,-1,0,0),
+            go::Vertex(-1,-1,-1,0,1),
+            go::Vertex( 1,-1,-1,1,1),m);
+        q.double_face() = false;
+        q.transform(rotate(v[i].x(),v[i].y(),v[i].z(),v[i].w()));
+        m_quad[i + 1] = q;
+    }
+}
+
+bool go::Room::hit(Ray &ray, Interval ray_t, HitResult &result)
+{
+    HitResult ret;
+    bool has_hit = false;
+    ret.t = infinity;
+    for (size_t i = 0; i < 5; i++)
+    {
+        Ray tray = ray;
+        HitResult r;
+        if (!m_quad[i].hit(tray,ray_t,r)){
+            continue;
+        }
+        
+        if(r.t < ret.t && ray_t.contains(r.t)){
+            ret = r;
+            has_hit = true;
+        }
+    }
+    if(!has_hit){
+        return false;
+    }
+    result = ret;
+    return true;
+}
+
+
+
+void go::Room::transform(const Matrix4d &transform)
+{
+    for (size_t i = 0; i < 5; i++)
+    {
+        m_quad[i].transform(transform);
+    }
 }

@@ -100,6 +100,7 @@ namespace go
         Material() {}
         virtual bool scatter(const Ray &in, Vector4d &color, HitResult &hit, Ray &out);
         virtual Vector3d emitted(HitResult &hit);
+        virtual double scatter_pdf(const Ray &in, const HitResult &hit, const Ray &out);
     };
 
     class NormalColor : public Material
@@ -115,7 +116,7 @@ namespace go
         Lambertian(Vector3d albedo);
         Lambertian(Texture *texure);
         virtual bool scatter(const Ray &in, Vector4d &color, HitResult &hit, Ray &out);
-
+        virtual double scatter_pdf(const Ray &in, const HitResult &hit, const Ray &out);
     private:
         std::shared_ptr<Texture> m_texture;
     };
@@ -155,6 +156,7 @@ namespace go
         isotropic(Vector3d albedo);
         isotropic(std::shared_ptr<Texture> tex);
         virtual bool scatter(const Ray &in, Vector4d &color, HitResult &hit, Ray &out);
+        virtual double scatter_pdf(const Ray &in, const HitResult &hit, const Ray &out);
     private:
         std::shared_ptr<Texture> m_texture;
     };

@@ -79,10 +79,20 @@ namespace go
     public:
         Box(std::shared_ptr<Material>);
         virtual bool hit(Ray &ray, Interval ray_t, HitResult &result);
-        virtual void uv(Vector2d &uv, const Vector3d &point);
         void transform(const Matrix4d&  transform);
     private:
         Quad m_quad[6];
     };
+
+    class Room : public Hitable
+    {
+    public:
+        Room(std::shared_ptr<Material>);
+        virtual bool hit(Ray &ray, Interval ray_t, HitResult &result);
+        void transform(const Matrix4d&  transform);
+    private:
+        Quad m_quad[5];
+    };
+
 
 } // namespace go

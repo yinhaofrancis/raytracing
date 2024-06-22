@@ -152,3 +152,23 @@ go::Interval go::Interval::expands(double x) const
     m.m_max += x;
     return m;
 }
+
+go::Random::Random(const Vector3d &w)
+{
+    auto s = w.normalized();
+    auto a = s.x() > 0.9 ? Vector3d(0,1,0) : Vector3d(1,0,0);
+    auto v = w.cross(a);
+    auto u = w.cross(v);
+    m_mat << u,v,w;
+}
+
+Vector3d go::Random::cosine_direction()
+{
+    auto r1 = random_double(0,1);
+    auto r2 = random_double(0,1);
+    auto phi = 2 * pi * r1;
+    auto x = cos(phi) * sqrt(r2);
+    auto y = sin(phi) * sqrt(r2);
+    auto z = sqrt(1 - r2);
+    return Vector3d(x,y,z);
+}
