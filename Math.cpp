@@ -1,11 +1,10 @@
 
 #include "Math.hpp"
 
+
 double random_double(double min, double max)
 {
-    static std::uniform_real_distribution<double> distribution(min, max);
-    static std::mt19937 generator;
-    return distribution(generator);
+    return fmod(double(rand()) / RAND_MAX,max-min) + min;
 }
 
 Vector3d mix(Vector3d start, Vector3d end, double s)
@@ -26,6 +25,10 @@ Vector3d random_in_unit_sphere()
     }
     return d;
 }
+Vector3d random_unit_vector()
+{
+    random_in_unit_sphere().normalized();
+}
 
 Vector3d random_in_unit_semisphere(Vector3d &normal)
 {
@@ -43,6 +46,18 @@ Vector3d random_in_unit_disk()
         return v;
     }
     return v;
+}
+
+Vector3d random_in_triangle(const Vector3d &v1, const Vector3d &v2, const Vector3d &v3)
+{
+    double c1 = random_double(0,1);
+    double c2 = random_double(0,1 - c1);
+    assert(c1 > 0);
+    assert(c2 > 0);
+    assert(c1 + c2 < 1);
+    Vector3d ab = v2 - v1;
+    Vector3d ac = v3 - v1;
+    return (ab * c1 + ac * c2) + v1;
 }
 
 Vector2d random_in_square(int i, int sample)
@@ -153,7 +168,7 @@ go::Interval go::Interval::expands(double x) const
     return m;
 }
 
-go::Random::Random(const Vector3d &w)
+go::Random::Random(const Vector3d &w):m_w(w)
 {
     auto s = w.normalized();
     auto a = s.x() > 0.9 ? Vector3d(0,1,0) : Vector3d(1,0,0);
@@ -162,7 +177,7 @@ go::Random::Random(const Vector3d &w)
     m_mat << u,v,w;
 }
 
-Vector3d go::Random::cosine_direction()
+Vector3d go::Random::cosine_direction() const
 {
     auto r1 = random_double(0,1);
     auto r2 = random_double(0,1);
@@ -170,5 +185,35 @@ Vector3d go::Random::cosine_direction()
     auto x = cos(phi) * sqrt(r2);
     auto y = sin(phi) * sqrt(r2);
     auto z = sqrt(1 - r2);
-    return Vector3d(x,y,z);
+    return m_mat * Vector3d(x,y,z);
+}
+
+Vector3d go::Random::w() const
+{
+    return m_w;
+}
+
+double go::sphere_pdf::value(const Vector3d &direction) const
+{
+    return 1 / 4 /pi;
+}
+
+Vector3d go::sphere_pdf::generate() const
+{
+    return random_unit_vector();
+}
+
+go::cosine_pdf::cosine_pdf(const Vector3d &w):m_r(w)
+{
+
+}
+
+double go::cosine_pdf::value(const Vector3d &direction) const
+{
+    return fmax(direction.dot(m_r.w()),0);
+}
+
+Vector3d go::cosine_pdf::generate() const
+{
+    return m_r.cosine_direction();
 }

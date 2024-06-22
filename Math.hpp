@@ -6,6 +6,7 @@
 #include <random>
 #include <memory>
 #include <vector>
+#include <math.h>
 
 using namespace Eigen;
 
@@ -28,6 +29,8 @@ Vector3d random_in_unit_sphere();
 Vector3d random_in_unit_semisphere(Vector3d &normal);
 
 Vector3d random_in_unit_disk();
+
+Vector3d random_in_triangle(const Vector3d &v1, const Vector3d &v2, const Vector3d &v3);
 
 Vector2d random_in_square(int sampleIndex, int sample);
 
@@ -65,8 +68,35 @@ namespace go
     {
     public:
         Random(const Vector3d &w);
-        Vector3d cosine_direction();
+        Vector3d cosine_direction() const;
+        Vector3d w() const;
     private:
+        Vector3d m_w;
         Matrix3d m_mat;
     };
+    class pdf
+    {
+    public:
+        virtual ~pdf() {}
+        virtual double value(const Vector3d &direction) const = 0;
+        virtual Vector3d generate() const = 0;
+    };
+    class sphere_pdf:public pdf{
+    public:
+        ~sphere_pdf() {}
+        virtual double value(const Vector3d &direction) const;
+        virtual Vector3d generate() const;
+    };
+    class cosine_pdf:public pdf{
+    public:
+        ~cosine_pdf() {}
+        cosine_pdf(const Vector3d& w);
+        virtual double value(const Vector3d &direction) const;
+        virtual Vector3d generate() const;
+    private:
+        Random m_r;
+
+    };
+
+
 } // namespace go

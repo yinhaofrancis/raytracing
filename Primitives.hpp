@@ -10,7 +10,8 @@ namespace go
         Sphere(Vector3d center, Vector3d center2, double radius, std::shared_ptr<Material>);
         virtual bool hit(Ray &ray, Interval ray_t, HitResult &result);
         virtual void uv(Vector2d &uv, const Vector3d &point);
-
+        virtual Vector3d random_serface(const Vector3d &point);
+        virtual LightStatus get_light_status(const HitResult &result);
     private:
         Vector3d center(Ray &);
         std::shared_ptr<Material> m_mat;
@@ -50,6 +51,8 @@ namespace go
         bool contain(const Vector3d &p);
         void transform(const Matrix4d& transform);
         bool& double_face();
+        Vector3d random_serface(const Vector3d &point);
+        virtual LightStatus get_light_status(const HitResult &result);
     private:
         bool same_size(const Vector3d &point1, const Vector3d &point2, const Vector3d &point3, const Vector3d &p);
         std::shared_ptr<Material> m_mat;
@@ -68,6 +71,8 @@ namespace go
         virtual void uv(Vector2d &uv, const Vector3d &point);
         void transform(const Matrix4d& transform);
         bool& double_face();
+        Vector3d random_serface(const Vector3d &point);
+        virtual LightStatus get_light_status(const HitResult &result);
     private:
         Triangle m_triangles[2];
         

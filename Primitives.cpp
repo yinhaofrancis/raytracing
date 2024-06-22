@@ -57,6 +57,19 @@ void go::Sphere::uv(Vector2d &uv, const Vector3d &point)
     uv[1] = v;
 }
 
+Vector3d go::Sphere::random_serface(const Vector3d &point)
+{
+    return Random(point).cosine_direction().normalized();
+}
+
+go::LightStatus go::Sphere::get_light_status(const HitResult &result)
+{
+    go::LightStatus ls;
+    ls.on_light = random_serface(result.hit - m_center);
+    ls.light_area = pi * m_radius * m_radius;
+    return ls;
+}
+
 Vector3d go::Sphere::center(Ray &t)
 {
     return mix(m_center, m_center2, t.time());
@@ -111,7 +124,8 @@ bool go::Triangle::hit(Ray &ray, Interval ray_t, HitResult &result)
     double A = m_normal.dot(ray.direction());
     double B = (m_point[0].point - ray.location()).dot(m_normal);
     double t = B / A;
-    if(!ray_t.contains(t)){
+    if (!ray_t.contains(t))
+    {
         return false;
     }
     Vector3d hit = ray.exec(t);
@@ -138,8 +152,7 @@ void go::Triangle::uv(Vector2d &uv, const Vector3d &point)
         this->m_point[2].point,
         this->m_point[0].uv,
         this->m_point[1].uv,
-        this->m_point[2].uv
-        );
+        this->m_point[2].uv);
 }
 
 bool go::Triangle::contain(const Vector3d &p)
@@ -149,7 +162,7 @@ bool go::Triangle::contain(const Vector3d &p)
            same_size(m_point[2].point, m_point[0].point, m_point[1].point, p);
 }
 
-void go::Triangle::transform(const Matrix4d& transform)
+void go::Triangle::transform(const Matrix4d &transform)
 {
     for (size_t i = 0; i < 3; i++)
     {
@@ -166,6 +179,24 @@ bool &go::Triangle::double_face()
     return is_double_face;
 }
 
+Vector3d go::Triangle::random_serface(const Vector3d &point)
+{
+    Vector3d v = random_in_triangle(m_point[0].point, m_point[1].point, m_point[2].point);
+    assert(contain(v));
+    return v;
+}
+
+go::LightStatus go::Triangle::get_light_status(const HitResult &result)
+{
+    go::LightStatus ls;
+    ls.on_light = random_serface(m_normal);
+    Vector3d ab = m_point[1].point - m_point[0].point;
+    Vector3d ac = m_point[2].point - m_point[0].point;
+    
+    ls.light_area = ab.cross(ac).size() / 2;
+    return ls;
+}
+
 bool go::Triangle::same_size(const Vector3d &point0, const Vector3d &point1, const Vector3d &point2, const Vector3d &p)
 {
     Vector3d ab = point1 - point0;
@@ -174,7 +205,7 @@ bool go::Triangle::same_size(const Vector3d &point0, const Vector3d &point1, con
     Vector3d v1 = ab.cross(ac);
     Vector3d v2 = ab.cross(ap);
 
-    return v1.dot(v2) >= 0 && v1.normalized().dot(v2.normalized()) > 0.99 ;
+    return v1.dot(v2) >= 0 && v1.normalized().dot(v2.normalized()) > 0.99;
 }
 
 go::Triangle::Triangle()
@@ -192,19 +223,19 @@ go::Triangle::Triangle(go::Vertex point1, go::Vertex point2, go::Vertex point3, 
 
 go::Quad::Quad(std::shared_ptr<Material> m)
 {
-    Vertex v0( 1,0,-1,1,0);
-    Vertex v1(-1,0,-1,0,0);
-    Vertex v2(-1,0, 1,0,1);
-    Vertex v3( 1,0, 1,1,1);
+    Vertex v0(1, 0, -1, 1, 0);
+    Vertex v1(-1, 0, -1, 0, 0);
+    Vertex v2(-1, 0, 1, 0, 1);
+    Vertex v3(1, 0, 1, 1, 1);
 
-    m_triangles[0] = go::Triangle(v0,v1,v2,m);
-    m_triangles[1] = go::Triangle(v0,v2,v3,m);
+    m_triangles[0] = go::Triangle(v0, v1, v2, m);
+    m_triangles[1] = go::Triangle(v0, v2, v3, m);
 }
 
 go::Quad::Quad(Vertex point1, Vertex point2, Vertex point3, Vertex point4, std::shared_ptr<Material> m)
 {
-    m_triangles[0] = go::Triangle(point1,point2,point3,m);
-    m_triangles[1] = go::Triangle(point1,point3,point4,m);
+    m_triangles[0] = go::Triangle(point1, point2, point3, m);
+    m_triangles[1] = go::Triangle(point1, point3, point4, m);
 }
 
 bool go::Quad::hit(Ray &ray, Interval ray_t, HitResult &result)
@@ -213,19 +244,25 @@ bool go::Quad::hit(Ray &ray, Interval ray_t, HitResult &result)
     {
         m_triangles[i].double_face() = is_double_face;
     }
-    HitResult ret1,ret2;
-    bool t1 = m_triangles[0].hit(ray,ray_t,ret1);
-    bool t2 = m_triangles[1].hit(ray,ray_t,ret2);
-    if(!t1 && !t2 ){
+    HitResult ret1, ret2;
+    bool t1 = m_triangles[0].hit(ray, ray_t, ret1);
+    bool t2 = m_triangles[1].hit(ray, ray_t, ret2);
+    if (!t1 && !t2)
+    {
         return false;
     }
-    if(t1 && t2){
+    if (t1 && t2)
+    {
         result = ret1.t > ret2.t ? ret2 : ret1;
         return true;
-    }else if(t2){
+    }
+    else if (t2)
+    {
         result = ret2;
         return true;
-    }else{
+    }
+    else
+    {
         result = ret1;
         return true;
     }
@@ -233,11 +270,13 @@ bool go::Quad::hit(Ray &ray, Interval ray_t, HitResult &result)
 
 void go::Quad::uv(Vector2d &uv, const Vector3d &point)
 {
-    if(m_triangles[0].contain(point)){
-        m_triangles[0].uv(uv,point);
+    if (m_triangles[0].contain(point))
+    {
+        m_triangles[0].uv(uv, point);
     }
-    if(m_triangles[1].contain(point)){
-        m_triangles[1].uv(uv,point);
+    if (m_triangles[1].contain(point))
+    {
+        m_triangles[1].uv(uv, point);
     }
 }
 
@@ -247,7 +286,6 @@ void go::Quad::transform(const Matrix4d &transform)
     {
         m_triangles[i].transform(transform);
     }
-    
 }
 
 bool &go::Quad::double_face()
@@ -255,35 +293,53 @@ bool &go::Quad::double_face()
     return is_double_face;
 }
 
+Vector3d go::Quad::random_serface(const Vector3d &point)
+{
+    if (random_double(0, 1) > 0.5)
+    {
+        return m_triangles[0].random_serface(point);
+    }
+    else
+    {
+        return m_triangles[1].random_serface(point);
+    }
+}
+
+go::LightStatus go::Quad::get_light_status(const HitResult &result)
+{
+    go::LightStatus ls;
+    ls.on_light = random_serface(Vector3d(0,0,0));
+    ls.light_area = m_triangles[0].get_light_status(result).light_area + m_triangles[1].get_light_status(result).light_area;
+    return ls;
+}
+
 go::Box::Box(std::shared_ptr<Material> m)
 {
     Vector4d v[5] = {
-        Vector4d(0,1,0,pi / 2),
-        Vector4d(0,1,0,pi / -2),
-        Vector4d(0,1,0,pi),
-        Vector4d(1,0,0,pi / 2),
-        Vector4d(1,0,0,pi / -2)
-    };
+        Vector4d(0, 1, 0, pi / 2),
+        Vector4d(0, 1, 0, pi / -2),
+        Vector4d(0, 1, 0, pi),
+        Vector4d(1, 0, 0, pi / 2),
+        Vector4d(1, 0, 0, pi / -2)};
     go::Quad q(
-            go::Vertex( 1, 1,1,1,0),
-            go::Vertex(-1, 1,1,0,0),
-            go::Vertex(-1,-1,1,0,1),
-            go::Vertex( 1,-1,1,1,1),m);
+        go::Vertex(1, 1, 1, 1, 0),
+        go::Vertex(-1, 1, 1, 0, 0),
+        go::Vertex(-1, -1, 1, 0, 1),
+        go::Vertex(1, -1, 1, 1, 1), m);
     q.double_face() = true;
     m_quad[0] = q;
-    
+
     for (size_t i = 0; i < 5; i++)
     {
         go::Quad q(
-            go::Vertex( 1, 1,1,1,0),
-            go::Vertex(-1, 1,1,0,0),
-            go::Vertex(-1,-1,1,0,1),
-            go::Vertex( 1,-1,1,1,1),m);
+            go::Vertex(1, 1, 1, 1, 0),
+            go::Vertex(-1, 1, 1, 0, 0),
+            go::Vertex(-1, -1, 1, 0, 1),
+            go::Vertex(1, -1, 1, 1, 1), m);
         q.double_face() = true;
-        q.transform(rotate(v[i].x(),v[i].y(),v[i].z(),v[i].w()));
+        q.transform(rotate(v[i].x(), v[i].y(), v[i].z(), v[i].w()));
         m_quad[i + 1] = q;
     }
-    
 }
 
 bool go::Box::hit(Ray &ray, Interval ray_t, HitResult &result)
@@ -295,22 +351,24 @@ bool go::Box::hit(Ray &ray, Interval ray_t, HitResult &result)
     {
         Ray tray = ray;
         HitResult r;
-        if (!m_quad[i].hit(tray,ray_t,r)){
+        if (!m_quad[i].hit(tray, ray_t, r))
+        {
             continue;
         }
-        
-        if(r.t < ret.t && ray_t.contains(r.t)){
+
+        if (r.t < ret.t && ray_t.contains(r.t))
+        {
             ret = r;
             has_hit = true;
         }
     }
-    if(!has_hit){
+    if (!has_hit)
+    {
         return false;
     }
     result = ret;
     return true;
 }
-
 
 void go::Box::transform(const Matrix4d &transform)
 {
@@ -320,36 +378,34 @@ void go::Box::transform(const Matrix4d &transform)
     }
 }
 
-go::Vertex::Vertex(double x, double y, double z, double u, double v):point(x,y,z),uv(u,v)
+go::Vertex::Vertex(double x, double y, double z, double u, double v) : point(x, y, z), uv(u, v)
 {
-
 }
 
 go::Room::Room(std::shared_ptr<Material> m)
 {
     Vector4d v[4] = {
-        Vector4d(0,1,0,pi / 2),
-        Vector4d(0,1,0,pi / -2),
-        Vector4d(1,0,0,pi / -2),
-        Vector4d(1,0,0,pi / 2)
-    };
+        Vector4d(0, 1, 0, pi / 2),
+        Vector4d(0, 1, 0, pi / -2),
+        Vector4d(1, 0, 0, pi / -2),
+        Vector4d(1, 0, 0, pi / 2)};
     go::Quad q(
-            go::Vertex( 1, 1,-1,1,0),
-            go::Vertex(-1, 1,-1,0,0),
-            go::Vertex(-1,-1,-1,0,1),
-            go::Vertex( 1,-1,-1,1,1),m);
+        go::Vertex(1, 1, -1, 1, 0),
+        go::Vertex(-1, 1, -1, 0, 0),
+        go::Vertex(-1, -1, -1, 0, 1),
+        go::Vertex(1, -1, -1, 1, 1), m);
     q.double_face() = false;
     m_quad[0] = q;
-    
+
     for (size_t i = 0; i < 4; i++)
     {
         go::Quad q(
-            go::Vertex( 1, 1,-1,1,0),
-            go::Vertex(-1, 1,-1,0,0),
-            go::Vertex(-1,-1,-1,0,1),
-            go::Vertex( 1,-1,-1,1,1),m);
+            go::Vertex(1, 1, -1, 1, 0),
+            go::Vertex(-1, 1, -1, 0, 0),
+            go::Vertex(-1, -1, -1, 0, 1),
+            go::Vertex(1, -1, -1, 1, 1), m);
         q.double_face() = false;
-        q.transform(rotate(v[i].x(),v[i].y(),v[i].z(),v[i].w()));
+        q.transform(rotate(v[i].x(), v[i].y(), v[i].z(), v[i].w()));
         m_quad[i + 1] = q;
     }
 }
@@ -363,23 +419,24 @@ bool go::Room::hit(Ray &ray, Interval ray_t, HitResult &result)
     {
         Ray tray = ray;
         HitResult r;
-        if (!m_quad[i].hit(tray,ray_t,r)){
+        if (!m_quad[i].hit(tray, ray_t, r))
+        {
             continue;
         }
-        
-        if(r.t < ret.t && ray_t.contains(r.t)){
+
+        if (r.t < ret.t && ray_t.contains(r.t))
+        {
             ret = r;
             has_hit = true;
         }
     }
-    if(!has_hit){
+    if (!has_hit)
+    {
         return false;
     }
     result = ret;
     return true;
 }
-
-
 
 void go::Room::transform(const Matrix4d &transform)
 {

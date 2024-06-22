@@ -27,7 +27,7 @@ namespace go
         Vector3d location() const;
         Vector3d direction() const;
         Vector3d exec(double t);
-
+        void setDirection(const Vector3d&);
         int depth();
 
         double time();
@@ -63,11 +63,20 @@ namespace go
         bool isFront;
     };
 
+    struct LightStatus{
+        Vector3d on_light;
+        double light_area;
+        double pdf(const go::HitResult &);
+        Vector3d toLight(const go::HitResult &);
+    };
+
     class Hitable
     {
     public:
         virtual bool hit(Ray &ray, Interval ray_t, HitResult &result);
-        bool &isFrontFace();
+        virtual bool &isFrontFace();
+        virtual LightStatus get_light_status(const HitResult &result);
+        virtual Vector3d random_serface(const Vector3d &point);
         virtual ~Hitable();
 
     private:
@@ -80,11 +89,13 @@ namespace go
         Scene(double max_distace, Vector4d &ambient);
         ~Scene();
         void add(Hitable *);
-        bool hitOnce(Ray &ray, HitResult &out);
+        void light(Hitable *);
+        bool hitOnce(Ray &ray, HitResult &out,LightStatus& status);
         Vector4d hit(Ray &ray);
-
+        bool hasLight();
     private:
         std::vector<Hitable *> items;
+        std::vector<Hitable *> lights;
         double m_max_distance;
         Vector4d m_ambient;
     };

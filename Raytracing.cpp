@@ -72,6 +72,12 @@ Vector3d go::Ray::exec(double t)
     return m_location + t * m_direction;
 }
 
+void go::Ray::setDirection(const Vector3d &d)
+{
+    m_direction = d;
+    m_direction.normalize();
+}
+
 int go::Ray::depth()
 {
     return m_max;
@@ -117,6 +123,16 @@ bool &go::Hitable::isFrontFace()
     return m_front;
 }
 
+go::LightStatus go::Hitable::get_light_status(const HitResult &result)
+{
+    return LightStatus();
+}
+
+Vector3d go::Hitable::random_serface(const Vector3d &point)
+{
+    return Vector3d();
+}
+
 go::Hitable::~Hitable()
 {
 }
@@ -141,7 +157,13 @@ void go::Scene::add(Hitable *i)
     items.push_back(i);
 }
 
-bool go::Scene::hitOnce(Ray &ray, HitResult &out)
+void go::Scene::light(Hitable *i)
+{
+    lights.push_back(i);
+    add(i);
+}
+
+bool go::Scene::hitOnce(Ray &ray, HitResult &out,LightStatus& status)
 {
     Interval m = Interval::max(m_max_distance);
     bool hit_some = false;
@@ -163,7 +185,8 @@ Vector4d go::Scene::hit(Ray &ray)
     if (ray.depth() > 0)
     {
         HitResult result;
-        if (hitOnce(ray, result))
+        LightStatus light;
+        if (hitOnce(ray, result,light))
         {
             Ray next;
             Vector4d color;
@@ -175,14 +198,33 @@ Vector4d go::Scene::hit(Ray &ray)
             if(!m){
                 return c;
             }
+            
+            auto status = lights.front()->get_light_status(result);
+            status.light_area = status.light_area ;
+            bool drawLight = false;
+            cosine_pdf surface_pdf(result.normal);
+            double pdf_val = surface_pdf.value(surface_pdf.generate());
+            if(hasLight()){
+                auto toL = status.toLight(result);
+                toL.normalize();
+                if(result.normal.dot(toL) > 0){
+                    next.setDirection(toL);
+                    drawLight = true;
+                }
+            }
+            auto pdf = !drawLight ? 1 / (2 * pi) :status.pdf(result) * pdf_val;
             auto nextColor = hit(next);
-            auto pdf = 1 / (2 * pi);
             return c + (color*scatter_pdf).cwiseProduct(nextColor) / pdf;
         }
         return m_ambient;
     }
 
     return Vector4d(0, 0, 0, 1);
+}
+
+bool go::Scene::hasLight()
+{
+    return lights.size() > 0;
 }
 
 bool go::Material::scatter(const Ray &in, Vector4d &color, HitResult &hit, Ray &out)
@@ -210,6 +252,7 @@ go::Lambertian::Lambertian(Texture *texure) : m_texture(texure)
 
 bool go::Lambertian::scatter(const Ray &in, Vector4d &color, HitResult &hit, Ray &out)
 {
+    // std::cout << "Lambertian" << std::endl;
     out = in;
     auto tColor = m_texture->color(hit.uv, hit.hit);
     color << tColor, 1.0;
@@ -278,9 +321,10 @@ go::Light::Light(Vector3d light):m_light(light)
 
 Vector3d go::Light::emitted(HitResult &hit)
 {
-    if(!hit.isFront){
-        return Vector3d(0,0,0);
-    }
+    // std::cout << "Light" << std::endl;
+    // if(!hit.isFront){
+    //     return Vector3d(0,0,0);
+    // }
     return m_light;
 }
 
@@ -320,4 +364,23 @@ bool go::isotropic::scatter(const Ray &in, Vector4d &color, HitResult &hit, Ray 
 double go::isotropic::scatter_pdf(const Ray &in, const HitResult &hit, const Ray &out)
 {
     return 1 / (4 * pi);
+}
+
+double go::LightStatus::pdf(const go::HitResult &hit)
+{
+    auto to_light = toLight(hit);
+    if (to_light.normalized().dot(hit.normal) < 0){
+        return -1;
+    }
+    auto light_cosine = fabs(to_light.y());
+    if (light_cosine < 0.000001)
+        return -1;
+    auto length_squared = to_light.dot(to_light);
+    auto pdf = length_squared / (light_cosine * light_area);
+    return pdf;
+}
+
+Vector3d go::LightStatus::toLight(const go::HitResult & hit)
+{
+    return on_light - hit.hit;
 }
